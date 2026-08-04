@@ -1,26 +1,68 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: 4px;
+  /* Custom Tokens */
+  --color-titanium-black: oklch(0.16 0.01 270);
+  --color-graphite: oklch(0.20 0.01 270);
+  --color-gunmetal: oklch(0.24 0.01 270);
+  --color-charcoal: oklch(0.28 0.01 270);
+  --color-deep-purple: oklch(0.55 0.22 280);
+  --color-deep-purple-muted: oklch(0.55 0.22 280 / 15%);
+  --color-text-primary: oklch(0.95 0 0);
+  --color-text-secondary: oklch(0.65 0 0);
+  --color-text-tertiary: oklch(0.45 0 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(0.16 0.01 270);
+  --foreground: oklch(0.95 0 0);
+  --border: oklch(1 0 0 / 4%);
+  --input: oklch(1 0 0 / 6%);
+  --ring: oklch(0.55 0.22 280 / 20%);
+  --radius: 4px;
+}
+
+@layer base {
+  * { 
+    @apply border-border outline-ring/50;
+    cursor: none;
+  }
+  input, textarea {
+    cursor: text;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "ss02", "cv01";
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility mono-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+@utility title-huge {
+  font-family: var(--font-sans);
+  font-size: 48px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--color-text-primary);
 }
