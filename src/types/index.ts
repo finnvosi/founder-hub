@@ -1,3 +1,8 @@
+// ─── Executive Roles ───────────────────────────────────────
+// Detected invisibly from authentication. Never exposed in UI.
+export type ExecutiveRole = "ceo" | "cfo" | "cmo" | "cto" | "tech-lead";
+
+// ─── Navigation ────────────────────────────────────────────
 export type NavigationItem = {
   label: string;
   href: string;
@@ -5,13 +10,21 @@ export type NavigationItem = {
   description: string;
 };
 
+// ─── Workspaces ────────────────────────────────────────────
+export type WorkspaceModule = "documents" | "files" | "tasks" | "chat" | "meetings";
+
+export type Workspace = {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  modules: WorkspaceModule[];
+};
+
+// ─── Domain Types ──────────────────────────────────────────
 export type TrendDirection = "up" | "down" | "neutral";
 
 export type UserStatus = "available" | "focus" | "away" | "offline";
-
-export type DecisionStatus = "pending" | "made" | "revisit";
-
-export type UpdateStatus = "draft" | "sent";
 
 export type MetricData = {
   id: string;
@@ -37,41 +50,4 @@ export type TeamMember = {
   timezone: string;
   status: UserStatus;
   joinedDate: string;
-};
-
-export type Decision = {
-  id: string;
-  title: string;
-  date: string;
-  status: DecisionStatus;
-  category: string;
-  context: string;
-  outcome: string | null;
-  author: string;
-};
-
-export type InvestorUpdate = {
-  id: string;
-  title: string;
-  date: string;
-  status: UpdateStatus;
-  highlights: string[];
-  metrics: Record<string, number | string | null>;
-};
-
-export type RunwayData = {
-  cashRemaining: number;
-  monthlyBurn: number;
-  dailyBurn: number;
-  runwayDays: number;
-  runwayMonths: number;
-  totalRaised: number;
-  lastFunding: {
-    round: string;
-    amount: number;
-    date: string;
-    lead: string;
-  };
-  burnTrend: number[];
-  revenueHistory: number[];
 };

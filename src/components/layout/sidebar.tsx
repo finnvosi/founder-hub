@@ -7,51 +7,57 @@ import { cn } from "@/lib/utils";
 import { NAVIGATION_ITEMS, APP_NAME } from "@/lib/constants";
 import { useAppStore } from "@/stores/app-store";
 import {
-  Activity,
-  TrendingUp,
-  BarChart3,
-  Users,
-  GitBranch,
-  Send,
-  type LucideIcon
+  LayoutDashboard,
+  Layers,
+  FileText,
+  FolderOpen,
+  CheckSquare,
+  Calendar,
+  MessageCircle,
+  Settings,
+  Search,
+  type LucideIcon,
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
-  pulse: Activity,
-  runway: TrendingUp,
-  metrics: BarChart3,
-  team: Users,
-  decisions: GitBranch,
-  updates: Send,
+  dashboard: LayoutDashboard,
+  workspace: Layers,
+  documents: FileText,
+  files: FolderOpen,
+  tasks: CheckSquare,
+  meetings: Calendar,
+  chat: MessageCircle,
+  settings: Settings,
+  search: Search,
 };
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { sidebarCollapsed } = useAppStore();
+  const { sidebarCollapsed, setCommandMenuOpen, userName, userInitials, userTitle } = useAppStore();
 
   return (
     <aside
       className={cn(
         "flex h-full flex-col bg-transparent transition-all duration-300",
-        sidebarCollapsed ? "w-[80px]" : "w-[260px]"
+        sidebarCollapsed ? "w-[72px]" : "w-[240px]"
       )}
     >
-      {/* Logo — geometric mark */}
-      <div className="flex items-center gap-3 px-6 pt-8 pb-12">
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-5 pt-7 pb-8">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-600 text-[12px] font-semibold text-white shadow-lg shadow-purple-900/20">
           F
         </div>
         {!sidebarCollapsed && (
-          <span className="font-mono text-[12px] font-medium uppercase tracking-[0.1em] text-white">
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-white/80">
             {APP_NAME}
           </span>
         )}
       </div>
 
-      {/* Navigation — floating items */}
-      <nav className="flex flex-1 flex-col gap-1.5 px-4">
+      {/* Primary Navigation — 7 core modules */}
+      <nav className="flex flex-1 flex-col gap-0.5 px-3">
         {NAVIGATION_ITEMS.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = iconMap[item.icon];
 
           return (
@@ -59,47 +65,91 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-colors duration-200",
+                "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200",
                 isActive
-                  ? "bg-white/5 text-white"
-                  : "text-white/40 hover:bg-white/5 hover:text-white/80"
+                  ? "bg-white/[0.06] text-white"
+                  : "text-white/35 hover:bg-white/[0.04] hover:text-white/70"
               )}
             >
-              {/* Active indicator — Deep Purple accent */}
               {isActive && (
                 <motion.div
                   layoutId="nav-indicator"
-                  className="absolute left-0 top-[10px] bottom-[10px] w-1 rounded-r-full bg-purple-500"
+                  className="absolute left-0 top-[8px] bottom-[8px] w-[3px] rounded-r-full bg-purple-500"
                   transition={{ type: "spring", stiffness: 400, damping: 35 }}
                 />
               )}
 
               <Icon
                 className={cn(
-                  "h-4 w-4 shrink-0 transition-all",
-                  isActive ? "text-purple-400 opacity-100" : "opacity-60 group-hover:opacity-100"
+                  "h-[18px] w-[18px] shrink-0 transition-all",
+                  isActive ? "text-purple-400" : "opacity-50 group-hover:opacity-80"
                 )}
                 strokeWidth={isActive ? 2 : 1.5}
               />
 
               {!sidebarCollapsed && (
-                <span className="text-sm font-medium tracking-wide">{item.label}</span>
+                <span className="text-[13px] font-medium">{item.label}</span>
               )}
             </Link>
           );
         })}
+
+        {/* Search — triggers command palette */}
+        <button
+          onClick={() => setCommandMenuOpen(true)}
+          className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-white/35 transition-all duration-200 hover:bg-white/[0.04] hover:text-white/70"
+        >
+          <Search
+            className="h-[18px] w-[18px] shrink-0 opacity-50 transition-all group-hover:opacity-80"
+            strokeWidth={1.5}
+          />
+          {!sidebarCollapsed && (
+            <div className="flex flex-1 items-center justify-between">
+              <span className="text-[13px] font-medium">Search</span>
+              <span className="font-mono text-[10px] text-white/25">⌘K</span>
+            </div>
+          )}
+        </button>
       </nav>
 
-      {/* Footer — user indicator */}
-      <div className="px-4 py-6">
-        <div className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-white/5 cursor-pointer">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white ring-1 ring-white/20">
-            AC
+      {/* Bottom section — Settings + User */}
+      <div className="flex flex-col gap-1 px-3 pb-4">
+        {/* Settings */}
+        <Link
+          href="/settings"
+          className={cn(
+            "group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200",
+            pathname.startsWith("/settings")
+              ? "bg-white/[0.06] text-white"
+              : "text-white/35 hover:bg-white/[0.04] hover:text-white/70"
+          )}
+        >
+          <Settings
+            className={cn(
+              "h-[18px] w-[18px] shrink-0 transition-all",
+              pathname.startsWith("/settings") ? "text-purple-400" : "opacity-50 group-hover:opacity-80"
+            )}
+            strokeWidth={1.5}
+          />
+          {!sidebarCollapsed && (
+            <span className="text-[13px] font-medium">Settings</span>
+          )}
+        </Link>
+
+        {/* Separator */}
+        <div className="mx-2 my-2 h-px bg-white/[0.04]" />
+
+        {/* User */}
+        <div className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-white/[0.04] cursor-pointer">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[11px] font-medium text-white/80 ring-1 ring-white/[0.08]">
+            {userInitials}
           </div>
           {!sidebarCollapsed && (
-            <div className="flex flex-col">
-              <span className="text-[13px] font-medium text-white/90">Alex Chen</span>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">CEO</span>
+            <div className="flex flex-col overflow-hidden">
+              <span className="truncate text-[13px] font-medium text-white/80">{userName}</span>
+              <span className="truncate font-mono text-[10px] uppercase tracking-wider text-white/30">
+                {userTitle}
+              </span>
             </div>
           )}
         </div>

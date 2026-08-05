@@ -12,31 +12,34 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { useAppStore } from "@/stores/app-store";
-import { NAVIGATION_ITEMS } from "@/lib/constants";
+import { NAVIGATION_ITEMS, ROLE_WORKSPACES } from "@/lib/constants";
 import {
-  Activity,
-  TrendingUp,
-  BarChart3,
-  Users,
-  GitBranch,
-  Send,
+  LayoutDashboard,
+  Layers,
+  FileText,
+  FolderOpen,
+  CheckSquare,
+  Calendar,
+  MessageCircle,
+  Settings,
   Plus,
-  FileEdit,
-  type LucideIcon
+  type LucideIcon,
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
-  pulse: Activity,
-  runway: TrendingUp,
-  metrics: BarChart3,
-  team: Users,
-  decisions: GitBranch,
-  updates: Send,
+  dashboard: LayoutDashboard,
+  workspace: Layers,
+  documents: FileText,
+  files: FolderOpen,
+  tasks: CheckSquare,
+  meetings: Calendar,
+  chat: MessageCircle,
+  settings: Settings,
 };
 
 export function CommandMenu() {
   const router = useRouter();
-  const { commandMenuOpen, setCommandMenuOpen } = useAppStore();
+  const { commandMenuOpen, setCommandMenuOpen, userRole } = useAppStore();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -55,9 +58,11 @@ export function CommandMenu() {
     command();
   };
 
+  const workspaces = ROLE_WORKSPACES[userRole] || [];
+
   return (
     <CommandDialog open={commandMenuOpen} onOpenChange={setCommandMenuOpen}>
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput placeholder="Search everything..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
 
@@ -70,29 +75,51 @@ export function CommandMenu() {
                 value={item.label}
                 onSelect={() => runCommand(() => router.push(item.href))}
               >
-                <Icon className="mr-2 h-4 w-4 opacity-60" />
-                <span>Go to {item.label}</span>
+                <Icon className="mr-2 h-4 w-4 opacity-50" />
+                <span>{item.label}</span>
               </CommandItem>
             );
           })}
+          <CommandItem
+            value="Settings"
+            onSelect={() => runCommand(() => router.push("/settings"))}
+          >
+            <Settings className="mr-2 h-4 w-4 opacity-50" />
+            <span>Settings</span>
+          </CommandItem>
         </CommandGroup>
 
         <CommandSeparator />
 
-        <CommandGroup heading="Actions">
+        <CommandGroup heading="Workspaces">
+          {workspaces.map((ws) => (
+            <CommandItem
+              key={ws.id}
+              value={ws.name}
+              onSelect={() => runCommand(() => router.push(`/workspace/${ws.id}`))}
+            >
+              <Layers className="mr-2 h-4 w-4 opacity-50" />
+              <span>{ws.name}</span>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+
+        <CommandSeparator />
+
+        <CommandGroup heading="Quick Actions">
           <CommandItem
-            value="Log a new decision"
-            onSelect={() => runCommand(() => router.push("/decisions"))}
+            value="New document"
+            onSelect={() => runCommand(() => router.push("/documents"))}
           >
-            <Plus className="mr-2 h-4 w-4 opacity-60" />
-            <span>Log a new decision</span>
+            <Plus className="mr-2 h-4 w-4 opacity-50" />
+            <span>New document</span>
           </CommandItem>
           <CommandItem
-            value="Draft investor update"
-            onSelect={() => runCommand(() => router.push("/updates"))}
+            value="New task"
+            onSelect={() => runCommand(() => router.push("/tasks"))}
           >
-            <FileEdit className="mr-2 h-4 w-4 opacity-60" />
-            <span>Draft investor update</span>
+            <Plus className="mr-2 h-4 w-4 opacity-50" />
+            <span>New task</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
