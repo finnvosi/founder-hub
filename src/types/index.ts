@@ -73,3 +73,17 @@ export type ChatMessage = {
   time: string;
   content: string;
 };
+
+export type MeetingItem = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  duration: string;
+  host: string;
+  attendees: string[];
+  doc?: string;
+  link?: string;
+  status: "upcoming" | "live" | "completed";
+  agenda?: string[];
+};

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { ExecutiveRole, Task, ChatMessage } from "@/types";
+import type { ExecutiveRole, Task, ChatMessage, MeetingItem } from "@/types";
 
 interface AppState {
   // UI
@@ -22,6 +22,9 @@ interface AppState {
   // Shared Synchronized Chat Messages
   messages: ChatMessage[];
 
+  // Shared Synchronized Meetings
+  meetings: MeetingItem[];
+
   // Actions
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
@@ -40,6 +43,11 @@ interface AppState {
 
   // Chat Actions (Synced across team members)
   addChatMessage: (msg: Omit<ChatMessage, "id" | "time">) => void;
+
+  // Meeting Actions (Synced across team members)
+  addMeeting: (meeting: Omit<MeetingItem, "id">) => void;
+  deleteMeeting: (id: string) => void;
+  updateMeetingStatus: (id: string, status: MeetingItem["status"]) => void;
 }
 
 const titleMap: Record<ExecutiveRole, string> = {
@@ -65,6 +73,48 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   { id: "5", channelId: "3", user: "Sarah", userRole: "cmo", time: "01:15 PM", content: "Swiss print light mode variables look super clean." },
 ];
 
+const INITIAL_MEETINGS: MeetingItem[] = [
+  {
+    id: "1",
+    title: "Executive Product Sync",
+    date: "Today",
+    time: "10:00 AM - 11:00 AM",
+    duration: "60 mins",
+    host: "Alex Chen",
+    attendees: ["Alex Chen", "Finn", "Sarah"],
+    doc: "Product Requirements v2",
+    link: "https://meet.google.com/xyz-hub-exec",
+    status: "live",
+    agenda: ["Review Q3 product roadmap", "System Architecture & RBAC overview", "Design system sign-off"],
+  },
+  {
+    id: "2",
+    title: "Series B Financial Update",
+    date: "Today",
+    time: "02:00 PM - 03:00 PM",
+    duration: "60 mins",
+    host: "Sarah",
+    attendees: ["Sarah", "Alex Chen"],
+    doc: "Financial Model 2028",
+    link: "https://meet.google.com/abc-fin-sync",
+    status: "upcoming",
+    agenda: ["Runway calculation review", "Investor deck metrics", "Cap table sync"],
+  },
+  {
+    id: "3",
+    title: "Engineering Architecture Review",
+    date: "Tomorrow",
+    time: "11:00 AM - 11:45 AM",
+    duration: "45 mins",
+    host: "Finn",
+    attendees: ["Finn", "Engineering Team"],
+    doc: "Technical Roadmap v3",
+    link: "https://meet.google.com/eng-arch-tech",
+    status: "upcoming",
+    agenda: ["Turbopack dev server performance", "Cross-session state persistence", "Edge runtime proxy optimization"],
+  },
+];
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -81,11 +131,10 @@ export const useAppStore = create<AppState>()(
       // Workspace
       activeWorkspaceId: null,
 
-      // Tasks
+      // Domain Models
       tasks: INITIAL_TASKS,
-
-      // Chat Messages
       messages: INITIAL_MESSAGES,
+      meetings: INITIAL_MEETINGS,
 
       // Actions
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
@@ -115,7 +164,7 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      // Task Actions (Synced globally across users/tabs)
+      // Task Actions
       addTask: (task) => set((state) => ({
         tasks: [{ ...task, id: Math.random().toString(36).substring(7) }, ...state.tasks]
       })),
@@ -129,7 +178,7 @@ export const useAppStore = create<AppState>()(
         tasks: state.tasks.map(t => t.id === id ? { ...t, status: t.status === "done" ? "todo" : "done" } : t)
       })),
 
-      // Chat Actions (Synced globally across users/tabs)
+      // Chat Actions
       addChatMessage: (msg) => set((state) => {
         const now = new Date();
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -140,6 +189,17 @@ export const useAppStore = create<AppState>()(
         };
         return { messages: [...state.messages, newMsg] };
       }),
+
+      // Meeting Actions
+      addMeeting: (meeting) => set((state) => ({
+        meetings: [{ ...meeting, id: Math.random().toString(36).substring(7) }, ...state.meetings]
+      })),
+      deleteMeeting: (id) => set((state) => ({
+        meetings: state.meetings.filter(m => m.id !== id)
+      })),
+      updateMeetingStatus: (id, status) => set((state) => ({
+        meetings: state.meetings.map(m => m.id === id ? { ...m, status } : m)
+      })),
     }),
     {
       name: "founder-hub-store",
@@ -147,6 +207,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         tasks: state.tasks,
         messages: state.messages,
+        meetings: state.meetings,
         userRole: state.userRole,
         userName: state.userName,
         userInitials: state.userInitials,
