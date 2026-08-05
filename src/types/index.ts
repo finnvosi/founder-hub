@@ -90,3 +90,13 @@ export type MeetingItem = {
   status: "upcoming" | "live" | "completed";
   agenda?: string[];
 };
+
+export type AppNotification = {
+  id: string;
+  type: "task" | "mention" | "meeting" | "chat";
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+  href?: string;
+};

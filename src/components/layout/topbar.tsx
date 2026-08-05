@@ -1,28 +1,68 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  Bell,
+  LogOut,
+  CheckCircle2,
+  CheckCheck,
+  Trash2,
+  FileText,
+  Calendar,
+  MessageCircle,
+  CheckSquare,
+  AtSign,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { transitionMacro } from "@/lib/motion";
+import { transitionMacro, transitionMicro } from "@/lib/motion";
 import { useAppStore } from "@/stores/app-store";
 import { signOut } from "@/app/actions";
-
-const MOCK_NOTIFICATIONS = [
-  { id: 1, text: "Sarah mentioned you in 'Q3 Board Deck'", time: "2m ago", read: false },
-  { id: 2, text: "New task assigned: Finalize Phase 3 Schema", time: "1h ago", read: false },
-  { id: 3, text: "Meeting starting in 5 mins: Product Sync", time: "2h ago", read: true },
-];
-
 import { ROLE_CONFIGS } from "@/lib/rbac";
+import type { AppNotification } from "@/types";
+
+const notifIconMap = {
+  task: CheckSquare,
+  mention: AtSign,
+  meeting: Calendar,
+  chat: MessageCircle,
+};
 
 export function Topbar() {
-  const { setCommandMenuOpen, userInitials, userRole } = useAppStore();
+  const router = useRouter();
+  const {
+    setCommandMenuOpen,
+    userInitials,
+    userRole,
+    notifications,
+    markNotificationAsRead,
+    markAllNotificationsAsRead,
+    clearNotifications,
+  } = useAppStore();
+
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notifFilter, setNotifFilter] = useState<"all" | "task" | "mention" | "meeting">("all");
+
   const roleConfig = ROLE_CONFIGS[userRole];
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const filteredNotifications = notifications.filter((n) => {
+    if (notifFilter === "all") return true;
+    return n.type === notifFilter;
+  });
+
+  const handleNotifClick = (n: AppNotification) => {
+    markNotificationAsRead(n.id);
+    if (n.href) {
+      router.push(n.href);
+      setShowNotifications(false);
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between px-8">
-      {/* RBAC Role Indicator */}
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between px-8 bg-background/80 backdrop-blur-md">
+      {/* RBAC Role Clearance Indicator */}
       <div className="flex items-center gap-2 rounded-full border border-border-subtle bg-surface-1 px-3 py-1 text-[11px]">
         <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
         <span className="font-mono font-semibold uppercase tracking-wider text-text-primary">
@@ -34,6 +74,7 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center gap-3 relative">
+        {/* Command Search Trigger */}
         <button
           onClick={() => setCommandMenuOpen(true)}
           className="group flex h-8 items-center gap-2 rounded-full border border-border-subtle bg-transparent px-3 text-sm text-text-tertiary transition-all hover:border-border-hover hover:bg-surface-2 hover:text-text-secondary"
@@ -44,13 +85,23 @@ export function Topbar() {
           </span>
         </button>
 
+        {/* Notifications Trigger & Popover */}
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="group relative flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle bg-transparent text-text-tertiary transition-all hover:border-border-hover hover:bg-surface-2 hover:text-text-secondary"
+            className={`group relative flex h-8 w-8 items-center justify-center rounded-full border bg-transparent text-text-tertiary transition-all ${
+              showNotifications || unreadCount > 0
+                ? "border-purple-500/40 bg-purple-500/10 text-purple-400"
+                : "border-border-subtle hover:border-border-hover hover:bg-surface-2 hover:text-text-secondary"
+            }`}
+            title="Notifications"
           >
-            <Bell className="h-4 w-4 opacity-60 transition-opacity group-hover:opacity-100" />
-            <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-purple-500" />
+            <Bell className="h-4 w-4 opacity-80 transition-opacity group-hover:opacity-100" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 font-mono text-[9px] font-bold text-white ring-2 ring-background shadow-md">
+                {unreadCount}
+              </span>
+            )}
           </button>
 
           <AnimatePresence>
@@ -60,27 +111,116 @@ export function Topbar() {
                 animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, scale: 0.96, y: -8, filter: "blur(4px)" }}
                 transition={transitionMacro}
-                className="absolute right-0 top-12 w-80 overflow-hidden rounded-md border border-border bg-surface-1 shadow-2xl backdrop-blur-xl"
+                className="absolute right-0 top-11 w-96 overflow-hidden rounded-2xl border border-border-subtle bg-surface-1 shadow-2xl backdrop-blur-2xl"
               >
-                <div className="border-b border-border-subtle px-4 py-3">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">Notifications</span>
+                {/* Header Controls */}
+                <div className="flex items-center justify-between border-b border-border-subtle px-5 py-3.5 bg-surface-2/50">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-text-primary">
+                      Notifications
+                    </span>
+                    {unreadCount > 0 && (
+                      <span className="rounded bg-purple-500/20 px-1.5 py-0.5 font-mono text-[9px] text-purple-300">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={() => markAllNotificationsAsRead()}
+                        className="flex items-center gap-1 font-mono text-[10px] text-text-tertiary hover:text-purple-400 transition-colors"
+                        title="Mark all read"
+                      >
+                        <CheckCheck className="h-3.5 w-3.5" />
+                        <span>Read All</span>
+                      </button>
+                    )}
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={() => clearNotifications()}
+                        className="flex items-center gap-1 font-mono text-[10px] text-text-tertiary hover:text-red-400 transition-colors ml-1"
+                        title="Clear all"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="max-h-96 overflow-y-auto divide-y divide-border-subtle">
-                  {MOCK_NOTIFICATIONS.map((note) => (
-                    <div key={note.id} className={`flex items-start gap-3 p-4 transition-colors hover:bg-surface-2 cursor-pointer ${!note.read ? "bg-surface-3" : ""}`}>
-                      {!note.read && <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-500" />}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[13px] text-text-secondary leading-tight">{note.text}</span>
-                        <span className="font-mono text-[10px] text-text-tertiary">{note.time}</span>
-                      </div>
-                    </div>
+
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-1 border-b border-border-subtle px-4 py-2 bg-surface-1">
+                  {(["all", "task", "mention", "meeting"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setNotifFilter(tab)}
+                      className={`rounded px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider transition-colors ${
+                        notifFilter === tab
+                          ? "bg-surface-3 text-text-primary font-medium"
+                          : "text-text-tertiary hover:text-text-secondary"
+                      }`}
+                    >
+                      {tab}
+                    </button>
                   ))}
+                </div>
+
+                {/* Notification List */}
+                <div className="max-h-96 overflow-y-auto divide-y divide-border-subtle">
+                  {filteredNotifications.length === 0 ? (
+                    <div className="py-12 text-center text-text-tertiary">
+                      <Bell className="h-6 w-6 mx-auto mb-2 opacity-20" />
+                      <p className="text-[12px]">No notifications in this filter.</p>
+                    </div>
+                  ) : (
+                    filteredNotifications.map((note) => {
+                      const Icon = notifIconMap[note.type] || Bell;
+
+                      return (
+                        <div
+                          key={note.id}
+                          onClick={() => handleNotifClick(note)}
+                          className={`group flex items-start gap-3.5 p-4 transition-all hover:bg-surface-2 cursor-pointer ${
+                            !note.read ? "bg-purple-500/[0.04]" : ""
+                          }`}
+                        >
+                          <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                            !note.read
+                              ? "border-purple-500/30 bg-purple-500/10 text-purple-400"
+                              : "border-border-subtle bg-surface-3 text-text-tertiary"
+                          }`}>
+                            <Icon className="h-3.5 w-3.5" />
+                          </div>
+
+                          <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+                            <div className="flex items-center justify-between">
+                              <span className={`text-[13px] font-medium transition-colors ${!note.read ? "text-text-primary" : "text-text-secondary"}`}>
+                                {note.title}
+                              </span>
+                              <span className="font-mono text-[9px] text-text-tertiary shrink-0 ml-2">
+                                {note.time}
+                              </span>
+                            </div>
+                            <p className="text-[11.5px] text-text-tertiary leading-relaxed truncate">
+                              {note.description}
+                            </p>
+                          </div>
+
+                          {!note.read && (
+                            <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400 shadow-sm" />
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
+        {/* Sign Out Button */}
         <button
           onClick={() => signOut()}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle bg-transparent text-text-tertiary transition-all hover:border-border-hover hover:bg-surface-2 hover:text-text-secondary"
@@ -89,6 +229,7 @@ export function Topbar() {
           <LogOut className="h-3.5 w-3.5" />
         </button>
 
+        {/* User Initials Avatar */}
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-3 font-mono text-[11px] text-text-primary ring-1 ring-border-subtle">
           {userInitials}
         </div>

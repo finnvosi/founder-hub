@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { ExecutiveRole, Task, ChatMessage, MeetingItem } from "@/types";
+import type { ExecutiveRole, Task, ChatMessage, MeetingItem, AppNotification } from "@/types";
 
 interface AppState {
   // UI
@@ -16,14 +16,11 @@ interface AppState {
   // Workspace
   activeWorkspaceId: string | null;
 
-  // Shared Synchronized Tasks
+  // Shared Models
   tasks: Task[];
-
-  // Shared Synchronized Chat Messages
   messages: ChatMessage[];
-
-  // Shared Synchronized Meetings
   meetings: MeetingItem[];
+  notifications: AppNotification[];
 
   // Actions
   toggleSidebar: () => void;
@@ -35,19 +32,25 @@ interface AppState {
   setUserRole: (role: ExecutiveRole) => void;
   setUserProfile: (profile: { name: string; role: ExecutiveRole }) => void;
   
-  // Task Actions (Synced across team members)
+  // Task Actions
   addTask: (task: Omit<Task, "id">) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   toggleTask: (id: string) => void;
 
-  // Chat Actions (Synced across team members)
+  // Chat Actions
   addChatMessage: (msg: Omit<ChatMessage, "id" | "time">) => void;
 
-  // Meeting Actions (Synced across team members)
+  // Meeting Actions
   addMeeting: (meeting: Omit<MeetingItem, "id">) => void;
   deleteMeeting: (id: string) => void;
   updateMeetingStatus: (id: string, status: MeetingItem["status"]) => void;
+
+  // Notification Actions
+  markNotificationAsRead: (id: string) => void;
+  markAllNotificationsAsRead: () => void;
+  clearNotifications: () => void;
+  addNotification: (notification: Omit<AppNotification, "id" | "time" | "read">) => void;
 }
 
 const titleMap: Record<ExecutiveRole, string> = {
@@ -100,18 +103,44 @@ const INITIAL_MEETINGS: MeetingItem[] = [
     status: "upcoming",
     agenda: ["Runway calculation review", "Investor deck metrics", "Cap table sync"],
   },
+];
+
+const INITIAL_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: "1",
+    type: "mention",
+    title: "Sarah mentioned you",
+    description: "In 'Q3 Board Deck' document",
+    time: "5m ago",
+    read: false,
+    href: "/documents",
+  },
+  {
+    id: "2",
+    type: "task",
+    title: "New task assigned",
+    description: "Finalize Phase 3 Schema assigned by Finn",
+    time: "1h ago",
+    read: false,
+    href: "/tasks",
+  },
   {
     id: "3",
-    title: "Engineering Architecture Review",
-    date: "Tomorrow",
-    time: "11:00 AM - 11:45 AM",
-    duration: "45 mins",
-    host: "Finn",
-    attendees: ["Finn", "Engineering Team"],
-    doc: "Technical Roadmap v3",
-    link: "https://meet.google.com/eng-arch-tech",
-    status: "upcoming",
-    agenda: ["Turbopack dev server performance", "Cross-session state persistence", "Edge runtime proxy optimization"],
+    type: "meeting",
+    title: "Meeting starting soon",
+    description: "Executive Product Sync starting in 15 mins",
+    time: "2h ago",
+    read: true,
+    href: "/meetings",
+  },
+  {
+    id: "4",
+    type: "chat",
+    title: "New message in #general",
+    description: "Finn: Next.js 16.3 Turbopack build checks passing",
+    time: "3h ago",
+    read: true,
+    href: "/chat",
   },
 ];
 
@@ -135,6 +164,7 @@ export const useAppStore = create<AppState>()(
       tasks: INITIAL_TASKS,
       messages: INITIAL_MESSAGES,
       meetings: INITIAL_MEETINGS,
+      notifications: INITIAL_NOTIFICATIONS,
 
       // Actions
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
@@ -165,9 +195,23 @@ export const useAppStore = create<AppState>()(
       },
 
       // Task Actions
-      addTask: (task) => set((state) => ({
-        tasks: [{ ...task, id: Math.random().toString(36).substring(7) }, ...state.tasks]
-      })),
+      addTask: (task) => set((state) => {
+        const newTaskId = Math.random().toString(36).substring(7);
+        const newTask: Task = { ...task, id: newTaskId };
+        const newNotif: AppNotification = {
+          id: Math.random().toString(36).substring(7),
+          type: "task",
+          title: "New task added",
+          description: `"${task.title}" created for ${task.assignee}`,
+          time: "Just now",
+          read: false,
+          href: "/tasks",
+        };
+        return {
+          tasks: [newTask, ...state.tasks],
+          notifications: [newNotif, ...state.notifications],
+        };
+      }),
       updateTask: (id, updates) => set((state) => ({
         tasks: state.tasks.map(t => t.id === id ? { ...t, ...updates } : t)
       })),
@@ -191,14 +235,48 @@ export const useAppStore = create<AppState>()(
       }),
 
       // Meeting Actions
-      addMeeting: (meeting) => set((state) => ({
-        meetings: [{ ...meeting, id: Math.random().toString(36).substring(7) }, ...state.meetings]
-      })),
+      addMeeting: (meeting) => set((state) => {
+        const newMeetingId = Math.random().toString(36).substring(7);
+        const newMeeting: MeetingItem = { ...meeting, id: newMeetingId };
+        const newNotif: AppNotification = {
+          id: Math.random().toString(36).substring(7),
+          type: "meeting",
+          title: "New meeting scheduled",
+          description: `"${meeting.title}" scheduled for ${meeting.date} at ${meeting.time}`,
+          time: "Just now",
+          read: false,
+          href: "/meetings",
+        };
+        return {
+          meetings: [newMeeting, ...state.meetings],
+          notifications: [newNotif, ...state.notifications],
+        };
+      }),
       deleteMeeting: (id) => set((state) => ({
         meetings: state.meetings.filter(m => m.id !== id)
       })),
       updateMeetingStatus: (id, status) => set((state) => ({
         meetings: state.meetings.map(m => m.id === id ? { ...m, status } : m)
+      })),
+
+      // Notification Actions
+      markNotificationAsRead: (id) => set((state) => ({
+        notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+      })),
+      markAllNotificationsAsRead: () => set((state) => ({
+        notifications: state.notifications.map(n => ({ ...n, read: true }))
+      })),
+      clearNotifications: () => set({ notifications: [] }),
+      addNotification: (notif) => set((state) => ({
+        notifications: [
+          {
+            ...notif,
+            id: Math.random().toString(36).substring(7),
+            time: "Just now",
+            read: false,
+          },
+          ...state.notifications,
+        ],
       })),
     }),
     {
@@ -208,6 +286,7 @@ export const useAppStore = create<AppState>()(
         tasks: state.tasks,
         messages: state.messages,
         meetings: state.meetings,
+        notifications: state.notifications,
         userRole: state.userRole,
         userName: state.userName,
         userInitials: state.userInitials,
