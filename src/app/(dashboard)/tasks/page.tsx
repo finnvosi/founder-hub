@@ -18,7 +18,10 @@ import {
   CheckSquare,
   Clock,
   User,
-  Filter,
+  Upload,
+  ExternalLink,
+  FileCheck,
+  Eye,
 } from "lucide-react";
 import type { TaskPriority, TaskStatus, Task } from "@/types";
 
@@ -45,6 +48,12 @@ export default function TasksPage() {
   // Edit State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+
+  // Deliverable Submission & View State
+  const [deliveringTask, setDeliveringTask] = useState<Task | null>(null);
+  const [deliverableNote, setDeliverableNote] = useState("");
+  const [deliverableLink, setDeliverableLink] = useState("");
+  const [viewingDeliverableTask, setViewingDeliverableTask] = useState<Task | null>(null);
 
   const completedCount = tasks.filter((t) => t.status === "done").length;
   const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
@@ -94,6 +103,25 @@ export default function TasksPage() {
       high: "low",
     };
     updateTask(id, { priority: nextPriority[currentPriority] });
+  };
+
+  const handleDeliverSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!deliveringTask) return;
+
+    const now = new Date();
+    const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+
+    updateTask(deliveringTask.id, {
+      status: "done",
+      deliverableNote: deliverableNote.trim() || "Task result delivered successfully.",
+      deliverableLink: deliverableLink.trim() || undefined,
+      deliveredAt: formattedDate,
+    });
+
+    setDeliveringTask(null);
+    setDeliverableNote("");
+    setDeliverableLink("");
   };
 
   return (
@@ -268,10 +296,10 @@ export default function TasksPage() {
         <div className="overflow-hidden rounded-xl border border-border-subtle bg-card">
           <div className="grid grid-cols-12 gap-4 border-b border-border-subtle px-6 py-3 bg-surface-1">
             <div className="col-span-1 mono-label text-center">Done</div>
-            <div className="col-span-6 mono-label">Task Title</div>
+            <div className="col-span-5 mono-label">Task Title</div>
             <div className="col-span-2 mono-label text-center">Priority</div>
             <div className="col-span-2 mono-label">Assignee</div>
-            <div className="col-span-1 mono-label text-right">Actions</div>
+            <div className="col-span-2 mono-label text-right">Deliver / Actions</div>
           </div>
 
           <div className="divide-y divide-border-subtle">
@@ -288,7 +316,7 @@ export default function TasksPage() {
                   transition={transitionMacro}
                   className={cn(
                     "group grid grid-cols-12 items-center gap-4 px-6 py-4 transition-colors hover:bg-surface-2",
-                    task.status === "done" && "opacity-50"
+                    task.status === "done" && "opacity-60"
                   )}
                 >
                   {/* Checkbox */}
@@ -310,8 +338,8 @@ export default function TasksPage() {
                     </motion.div>
                   </div>
 
-                  {/* Title & Edit */}
-                  <div className="col-span-6">
+                  {/* Title & Deliverable Info */}
+                  <div className="col-span-5 flex flex-col gap-0.5">
                     {editingId === task.id ? (
                       <form onSubmit={(e) => handleEditSubmit(e, task.id)} className="w-full">
                         <input
@@ -336,9 +364,19 @@ export default function TasksPage() {
                         {task.title}
                       </span>
                     )}
+
+                    {task.deliverableNote && (
+                      <button
+                        onClick={() => setViewingDeliverableTask(task)}
+                        className="flex items-center gap-1 font-mono text-[10px] text-purple-400 hover:text-purple-300 transition-colors w-fit"
+                      >
+                        <FileCheck className="h-3 w-3" />
+                        <span>Deliverable Attached →</span>
+                      </button>
+                    )}
                   </div>
 
-                  {/* Priority Badge (Clickable to cycle) */}
+                  {/* Priority Badge */}
                   <div className="col-span-2 flex justify-center">
                     <button
                       onClick={() => cyclePriority(task.id, task.priority)}
@@ -359,18 +397,36 @@ export default function TasksPage() {
                     <span className="truncate">{task.assignee}</span>
                   </div>
 
-                  {/* Actions */}
-                  <div className="col-span-1 flex items-center justify-end gap-1.5 text-right">
+                  {/* Deliver Result & Actions */}
+                  <div className="col-span-2 flex items-center justify-end gap-2 text-right">
+                    {task.status !== "done" ? (
+                      <button
+                        onClick={() => setDeliveringTask(task)}
+                        className="flex items-center gap-1 rounded bg-purple-500/10 border border-purple-500/30 px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-wider text-purple-300 hover:bg-purple-500/20 transition-all"
+                      >
+                        <Upload className="h-3 w-3" />
+                        <span>Deliver</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setViewingDeliverableTask(task)}
+                        className="flex items-center gap-1 rounded border border-border-subtle bg-surface-2 px-2.5 py-1 font-mono text-[10px] text-text-tertiary hover:text-text-primary transition-all"
+                      >
+                        <Eye className="h-3 w-3" />
+                        <span>Result</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={() => { setEditTitle(task.title); setEditingId(task.id); }}
-                      className="p-1.5 text-text-tertiary hover:text-text-primary hover:bg-surface-3 rounded transition-colors"
+                      className="p-1 text-text-tertiary hover:text-text-primary hover:bg-surface-3 rounded transition-colors"
                       title="Edit"
                     >
                       <Edit2 className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => deleteTask(task.id)}
-                      className="p-1.5 text-text-tertiary hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                      className="p-1 text-text-tertiary hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
                       title="Delete"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -423,10 +479,11 @@ export default function TasksPage() {
                       </div>
 
                       <button
-                        onClick={() => toggleTask(task.id)}
-                        className="rounded bg-purple-500/10 px-2 py-1 text-purple-400 hover:bg-purple-500/20 transition-colors font-semibold"
+                        onClick={() => setDeliveringTask(task)}
+                        className="flex items-center gap-1 rounded bg-purple-500/10 px-2.5 py-1 text-purple-300 hover:bg-purple-500/20 transition-colors font-semibold"
                       >
-                        Mark Done →
+                        <Upload className="h-3 w-3" />
+                        <span>Deliver Result</span>
                       </button>
                     </div>
                   </motion.div>
@@ -434,11 +491,11 @@ export default function TasksPage() {
             </div>
           </div>
 
-          {/* Column: Completed */}
+          {/* Column: Completed & Delivered */}
           <div className="flex flex-col gap-3 rounded-xl border border-border-subtle bg-surface-1 p-4">
             <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
               <span className="font-mono text-[11px] uppercase tracking-wider text-text-primary font-medium">
-                Completed ({filteredTasks.filter(t => t.status === "done").length})
+                Delivered & Done ({filteredTasks.filter(t => t.status === "done").length})
               </span>
             </div>
 
@@ -450,22 +507,28 @@ export default function TasksPage() {
                     key={task.id}
                     layout
                     transition={transitionMacro}
-                    className="group flex flex-col gap-3 rounded-lg border border-border-subtle bg-card p-4 opacity-60 transition-all hover:opacity-100"
+                    className="group flex flex-col gap-3 rounded-lg border border-border-subtle bg-card p-4 opacity-80 transition-all hover:opacity-100"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <span className="text-[13px] font-medium text-text-tertiary line-through leading-snug">
+                      <span className="text-[13px] font-medium text-text-secondary line-through leading-snug">
                         {task.title}
                       </span>
                       <Check className="h-4 w-4 text-purple-400 shrink-0" />
                     </div>
 
+                    {task.deliverableNote && (
+                      <p className="text-[11px] text-text-tertiary line-clamp-2 bg-surface-2 p-2 rounded border border-border-subtle italic">
+                        &quot;{task.deliverableNote}&quot;
+                      </p>
+                    )}
+
                     <div className="flex items-center justify-between pt-2 border-t border-border-subtle font-mono text-[10px] text-text-tertiary">
-                      <span>{task.assignee}</span>
+                      <span>Delivered by {task.assignee}</span>
                       <button
-                        onClick={() => toggleTask(task.id)}
-                        className="text-text-tertiary hover:text-text-primary transition-colors"
+                        onClick={() => setViewingDeliverableTask(task)}
+                        className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
                       >
-                        Reopen
+                        View Proof →
                       </button>
                     </div>
                   </motion.div>
@@ -474,6 +537,150 @@ export default function TasksPage() {
           </div>
         </div>
       )}
+
+      {/* ── SUBMIT DELIVERABLE RESULT MODAL ── */}
+      <AnimatePresence>
+        {deliveringTask && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={transitionMicro}
+              className="w-full max-w-lg rounded-2xl border border-border-subtle bg-surface-1 p-6 shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-4 border-b border-border-subtle pb-3">
+                <div>
+                  <span className="mono-label text-purple-400">Deliverable Submission</span>
+                  <h3 className="text-[16px] font-medium text-text-primary">
+                    Deliver Task Result
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setDeliveringTask(null)}
+                  className="rounded-lg p-1.5 text-text-tertiary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="mb-4 rounded-lg border border-border-subtle bg-surface-2 p-3 font-mono text-[11px] text-text-secondary">
+                Task: <strong className="text-text-primary">{deliveringTask.title}</strong>
+              </div>
+
+              <form onSubmit={handleDeliverSubmit} className="space-y-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="mono-label text-[10px]">Proof of Work / Result Summary</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={deliverableNote}
+                    onChange={(e) => setDeliverableNote(e.target.value)}
+                    placeholder="Describe the output, accomplishments, or details of the completed task..."
+                    className="rounded-lg border border-border-subtle bg-surface-2 px-3.5 py-2.5 text-[13px] text-text-primary outline-none focus:border-border-hover resize-none"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="mono-label text-[10px]">Deliverable Artifact Link (Optional)</label>
+                  <input
+                    type="url"
+                    value={deliverableLink}
+                    onChange={(e) => setDeliverableLink(e.target.value)}
+                    placeholder="https://github.com/... or https://figma.com/..."
+                    className="rounded-lg border border-border-subtle bg-surface-2 px-3.5 py-2.5 text-[13px] text-text-primary outline-none focus:border-border-hover"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
+                  <button
+                    type="button"
+                    onClick={() => setDeliveringTask(null)}
+                    className="rounded-lg px-4 py-2 text-[13px] text-text-tertiary hover:text-text-primary transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 rounded-lg bg-foreground px-5 py-2 text-[13px] font-medium text-background hover:opacity-90 transition-all shadow-md"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>Submit & Deliver Result</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── VIEW DELIVERABLE RESULT MODAL ── */}
+      <AnimatePresence>
+        {viewingDeliverableTask && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={transitionMicro}
+              className="w-full max-w-lg rounded-2xl border border-border-subtle bg-surface-1 p-6 shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-4 border-b border-border-subtle pb-3">
+                <div>
+                  <span className="mono-label text-purple-400">Delivered Result</span>
+                  <h3 className="text-[16px] font-medium text-text-primary">
+                    {viewingDeliverableTask.title}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setViewingDeliverableTask(null)}
+                  className="rounded-lg p-1.5 text-text-tertiary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between font-mono text-[10px] text-text-tertiary rounded-lg bg-surface-2 px-3 py-2 border border-border-subtle">
+                  <span>Delivered by: <strong className="text-text-secondary">{viewingDeliverableTask.assignee}</strong></span>
+                  <span>{viewingDeliverableTask.deliveredAt || "Completed"}</span>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <span className="mono-label text-[10px]">Deliverable Summary</span>
+                  <div className="rounded-lg border border-border-subtle bg-surface-2 p-3.5 text-[13px] text-text-primary leading-relaxed whitespace-pre-wrap">
+                    {viewingDeliverableTask.deliverableNote || "No note attached."}
+                  </div>
+                </div>
+
+                {viewingDeliverableTask.deliverableLink && (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="mono-label text-[10px]">Artifact Link</span>
+                    <a
+                      href={viewingDeliverableTask.deliverableLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between rounded-lg border border-purple-500/30 bg-purple-500/10 px-4 py-2.5 font-mono text-[11px] text-purple-300 hover:bg-purple-500/20 transition-all"
+                    >
+                      <span className="truncate">{viewingDeliverableTask.deliverableLink}</span>
+                      <ExternalLink className="h-3.5 w-3.5 shrink-0 ml-2" />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end pt-4 mt-6 border-t border-border-subtle">
+                <button
+                  onClick={() => setViewingDeliverableTask(null)}
+                  className="rounded-lg bg-foreground px-5 py-2 text-[13px] font-medium text-background hover:opacity-90 transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

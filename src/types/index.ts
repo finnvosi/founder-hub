@@ -63,6 +63,9 @@ export type Task = {
   priority: TaskPriority;
   assignee: string;
   due: string;
+  deliverableNote?: string;
+  deliverableLink?: string;
+  deliveredAt?: string;
 };
 
 export type ChatMessage = {
