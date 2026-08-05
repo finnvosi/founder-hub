@@ -13,10 +13,12 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(formData: FormData) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setLoading(true);
     setError(null);
 
+    const formData = new FormData(e.currentTarget);
     const action = mode === "signin" ? signIn : signUp;
     const result = await action(formData);
 
@@ -51,7 +53,7 @@ export default function LoginPage() {
           </span>
         </div>
 
-        <form action={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={onSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label htmlFor="email" className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
               Email Address

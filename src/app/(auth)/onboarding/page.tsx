@@ -23,11 +23,13 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(formData: FormData) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (!selectedRole) return;
     setLoading(true);
     setError(null);
 
+    const formData = new FormData(e.currentTarget);
     formData.set("executiveRole", selectedRole);
     const result = await completeOnboarding(formData);
 
@@ -68,7 +70,7 @@ export default function OnboardingPage() {
           </p>
         </div>
 
-        <form action={handleSubmit} className="flex flex-col gap-8">
+        <form onSubmit={onSubmit} className="flex flex-col gap-8">
           {/* Name */}
           <div className="flex flex-col gap-2">
             <label htmlFor="fullName" className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">

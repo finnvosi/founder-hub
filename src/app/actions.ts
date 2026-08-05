@@ -18,6 +18,9 @@ export async function signIn(formData: FormData) {
     return { error: error.message };
   }
 
+  // Artificial delay to allow the premium loading sequence to play out
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }
@@ -35,6 +38,9 @@ export async function signUp(formData: FormData) {
   if (error) {
     return { error: error.message };
   }
+
+  // Artificial delay to allow the premium loading sequence to play out
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   revalidatePath("/", "layout");
   redirect("/onboarding");
@@ -69,6 +75,9 @@ export async function completeOnboarding(formData: FormData) {
   if (error) {
     return { error: error.message };
   }
+
+  // Artificial delay to allow the premium loading sequence to play out
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
