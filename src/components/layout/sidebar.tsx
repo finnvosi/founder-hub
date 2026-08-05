@@ -94,22 +94,7 @@ export function Sidebar() {
           );
         })}
 
-        {/* Search — triggers command palette */}
-        <button
-          onClick={() => setCommandMenuOpen(true)}
-          className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-white/35 transition-all duration-200 hover:bg-white/[0.04] hover:text-white/70"
-        >
-          <Search
-            className="h-[18px] w-[18px] shrink-0 opacity-50 transition-all group-hover:opacity-80"
-            strokeWidth={1.5}
-          />
-          {!sidebarCollapsed && (
-            <div className="flex flex-1 items-center justify-between">
-              <span className="text-[13px] font-medium">Search</span>
-              <span className="font-mono text-[10px] text-white/25">⌘K</span>
-            </div>
-          )}
-        </button>
+
       </nav>
 
       {/* Bottom section — Settings + User */}
