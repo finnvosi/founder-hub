@@ -12,14 +12,7 @@ import {
   Clock,
 } from "lucide-react";
 
-import { useState } from "react";
-
-// ─── Morning Desk Data ─────────────────────────────────────
-const INITIAL_TODAY_TASKS = [
-  { id: 1, title: "Review Q3 board deck draft", priority: "high", due: "Today", status: "todo" },
-  { id: 2, title: "Approve marketing budget proposal", priority: "medium", due: "Today", status: "todo" },
-  { id: 3, title: "Sign partnership agreement", priority: "high", due: "Today", status: "todo" },
-];
+import { useAppStore } from "@/stores/app-store";
 
 const UPCOMING_MEETINGS = [
   { id: 1, title: "Product Sync", time: "10:00 AM", attendees: 4 },
@@ -48,15 +41,7 @@ const priorityColor: Record<string, string> = {
 };
 
 export default function DashboardPage() {
-  const [tasks, setTasks] = useState(INITIAL_TODAY_TASKS);
-
-  const toggleTask = (id: number) => {
-    setTasks((current) =>
-      current.map((t) =>
-        t.id === id ? { ...t, status: t.status === "done" ? "todo" : "done" } : t
-      )
-    );
-  };
+  const { tasks, toggleTask } = useAppStore();
 
   return (
     <div className="w-full max-w-3xl">

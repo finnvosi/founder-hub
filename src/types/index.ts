@@ -51,3 +51,16 @@ export type TeamMember = {
   status: UserStatus;
   joinedDate: string;
 };
+
+export type TaskStatus = "todo" | "in_progress" | "done";
+
+export type TaskPriority = "high" | "medium" | "low";
+
+export type Task = {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  assignee: string;
+  due: string;
+};
