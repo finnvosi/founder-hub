@@ -35,26 +35,26 @@ const RECENT_ACTIVITY = [
 const UNREAD_MESSAGES = 3;
 
 const priorityColor: Record<string, string> = {
-  high: "bg-red-500/20 text-red-400",
-  medium: "bg-amber-500/20 text-amber-400",
-  low: "bg-emerald-500/20 text-emerald-400",
+  high: "bg-red-500/10 text-red-500 dark:bg-red-500/20 dark:text-red-400",
+  medium: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
+  low: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
 };
 
 export default function DashboardPage() {
-  const { tasks, toggleTask } = useAppStore();
+  const { tasks, toggleTask, userName } = useAppStore();
 
   return (
     <div className="w-full max-w-3xl">
       <PageHeader
-        title="Good morning, Alex"
+        title={`Good morning, ${userName.split(" ")[0] || userName}`}
         subtitle="Here is what needs your attention today."
       />
 
       {/* ── Today's Tasks ─────────────────────────── */}
       <section className="mb-12">
         <div className="mb-4 flex items-center gap-2">
-          <CheckSquare className="h-4 w-4 text-white/30" strokeWidth={1.5} />
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+          <CheckSquare className="h-4 w-4 text-text-tertiary" strokeWidth={1.5} />
+          <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
             Today&apos;s Tasks
           </h2>
         </div>
@@ -62,10 +62,8 @@ export default function DashboardPage() {
           {tasks.map((task) => (
             <motion.div
               key={task.id}
-              whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
-              transition={transitionMicro}
               onClick={() => toggleTask(task.id)}
-              className={`group flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-colors ${
+              className={`group flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-colors hover:bg-surface-2 ${
                 task.status === "done" ? "opacity-50" : ""
               }`}
             >
@@ -73,14 +71,14 @@ export default function DashboardPage() {
                 <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
                   task.status === "done"
                     ? "border-text-primary bg-text-primary"
-                    : "border-white/10 group-hover:border-white/20"
+                    : "border-border group-hover:border-border-hover"
                 }`}>
                   {task.status === "done" && (
                     <motion.svg
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={transitionMicro}
-                      className="h-3 w-3 text-titanium-black"
+                      className="h-3 w-3 text-background"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -92,8 +90,8 @@ export default function DashboardPage() {
                 </div>
                 <span className={`text-[13px] transition-colors ${
                   task.status === "done"
-                    ? "text-white/50 line-through"
-                    : "text-white/80 group-hover:text-white"
+                    ? "text-text-tertiary line-through"
+                    : "text-text-secondary group-hover:text-text-primary"
                 }`}>
                   {task.title}
                 </span>
@@ -102,7 +100,7 @@ export default function DashboardPage() {
                 <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider ${priorityColor[task.priority]}`}>
                   {task.priority}
                 </span>
-                <span className="font-mono text-[10px] text-white/25">{task.due}</span>
+                <span className="font-mono text-[10px] text-text-tertiary">{task.due}</span>
               </div>
             </motion.div>
           ))}
@@ -112,8 +110,8 @@ export default function DashboardPage() {
       {/* ── Upcoming Meetings ─────────────────────── */}
       <section className="mb-12">
         <div className="mb-4 flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-white/30" strokeWidth={1.5} />
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+          <Calendar className="h-4 w-4 text-text-tertiary" strokeWidth={1.5} />
+          <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
             Upcoming Meetings
           </h2>
         </div>
@@ -121,21 +119,19 @@ export default function DashboardPage() {
           {UPCOMING_MEETINGS.map((meeting) => (
             <motion.div
               key={meeting.id}
-              whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
-              transition={transitionMicro}
-              className="group flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-colors"
+              className="group flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-colors hover:bg-surface-2"
             >
               <div className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-purple-400/60" strokeWidth={1.5} />
-                <span className="text-[13px] text-white/80 group-hover:text-white transition-colors">
+                <Clock className="h-4 w-4 text-purple-500/60" strokeWidth={1.5} />
+                <span className="text-[13px] text-text-secondary group-hover:text-text-primary transition-colors">
                   {meeting.title}
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="font-mono text-[10px] text-white/25">
+                <span className="font-mono text-[10px] text-text-tertiary">
                   {meeting.attendees} attendees
                 </span>
-                <span className="font-mono text-[11px] text-white/50">{meeting.time}</span>
+                <span className="font-mono text-[11px] text-text-secondary">{meeting.time}</span>
               </div>
             </motion.div>
           ))}
@@ -147,8 +143,8 @@ export default function DashboardPage() {
         {/* Recent Documents */}
         <section>
           <div className="mb-4 flex items-center gap-2">
-            <FileText className="h-4 w-4 text-white/30" strokeWidth={1.5} />
-            <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+            <FileText className="h-4 w-4 text-text-tertiary" strokeWidth={1.5} />
+            <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
               Recent Documents
             </h2>
           </div>
@@ -156,14 +152,12 @@ export default function DashboardPage() {
             {RECENT_DOCUMENTS.map((doc) => (
               <motion.div
                 key={doc.id}
-                whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
-                transition={transitionMicro}
-                className="group flex cursor-pointer flex-col gap-1 rounded-lg px-4 py-3 transition-colors"
+                className="group flex cursor-pointer flex-col gap-1 rounded-lg px-4 py-3 transition-colors hover:bg-surface-2"
               >
-                <span className="text-[13px] text-white/80 group-hover:text-white transition-colors">
+                <span className="text-[13px] text-text-secondary group-hover:text-text-primary transition-colors">
                   {doc.title}
                 </span>
-                <span className="font-mono text-[10px] text-white/25">
+                <span className="font-mono text-[10px] text-text-tertiary">
                   {doc.updated} · {doc.author}
                 </span>
               </motion.div>
@@ -174,28 +168,26 @@ export default function DashboardPage() {
         {/* Unread Messages */}
         <section>
           <div className="mb-4 flex items-center gap-2">
-            <MessageCircle className="h-4 w-4 text-white/30" strokeWidth={1.5} />
-            <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+            <MessageCircle className="h-4 w-4 text-text-tertiary" strokeWidth={1.5} />
+            <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
               Messages
             </h2>
           </div>
           <motion.div
-            whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
-            transition={transitionMicro}
-            className="group flex cursor-pointer items-center justify-between rounded-lg px-4 py-4 transition-colors"
+            className="group flex cursor-pointer items-center justify-between rounded-lg px-4 py-4 transition-colors hover:bg-surface-2"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/15">
-                <MessageCircle className="h-4 w-4 text-purple-400" strokeWidth={1.5} />
+                <MessageCircle className="h-4 w-4 text-purple-500" strokeWidth={1.5} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[13px] text-white/80">
+                <span className="text-[13px] text-text-secondary group-hover:text-text-primary transition-colors">
                   {UNREAD_MESSAGES} unread messages
                 </span>
-                <span className="font-mono text-[10px] text-white/25">across 2 channels</span>
+                <span className="font-mono text-[10px] text-text-tertiary">across 2 channels</span>
               </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-white/20 transition-all group-hover:text-white/50 group-hover:translate-x-0.5" strokeWidth={1.5} />
+            <ArrowRight className="h-4 w-4 text-text-tertiary transition-all group-hover:text-text-secondary group-hover:translate-x-0.5" strokeWidth={1.5} />
           </motion.div>
         </section>
       </div>
@@ -203,8 +195,8 @@ export default function DashboardPage() {
       {/* ── Recent Activity ───────────────────────── */}
       <section>
         <div className="mb-4 flex items-center gap-2">
-          <Clock className="h-4 w-4 text-white/30" strokeWidth={1.5} />
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+          <Clock className="h-4 w-4 text-text-tertiary" strokeWidth={1.5} />
+          <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
             Recent Activity
           </h2>
         </div>
@@ -214,8 +206,8 @@ export default function DashboardPage() {
               key={activity.id}
               className="flex items-center justify-between px-4 py-2.5"
             >
-              <span className="text-[13px] text-white/50">{activity.text}</span>
-              <span className="font-mono text-[10px] text-white/20 shrink-0 ml-4">{activity.time}</span>
+              <span className="text-[13px] text-text-secondary">{activity.text}</span>
+              <span className="font-mono text-[10px] text-text-tertiary shrink-0 ml-4">{activity.time}</span>
             </div>
           ))}
         </div>

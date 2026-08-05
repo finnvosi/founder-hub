@@ -90,12 +90,12 @@ export function ArchitecturalLoader({ messages, fullScreen = true }: Architectur
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, filter: "blur(8px)", transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] } }}
-      className={`z-50 flex flex-col items-center justify-center overflow-hidden bg-titanium-black ${
+      className={`z-50 flex flex-col items-center justify-center overflow-hidden bg-background ${
         fullScreen ? "fixed inset-0" : "absolute inset-0 rounded-lg"
       }`}
     >
       {/* Blueprint Grid SVG */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30 mix-blend-plus-lighter">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30 mix-blend-multiply dark:mix-blend-plus-lighter">
         <svg
           viewBox="0 0 1000 1000"
           className="h-full w-full max-w-[200vh] max-h-[200vw] object-cover opacity-20"
@@ -110,7 +110,7 @@ export function ArchitecturalLoader({ messages, fullScreen = true }: Architectur
               y2={line.y2}
               stroke="currentColor"
               strokeWidth={0.5}
-              className="text-white"
+              className="text-foreground"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
               transition={{
@@ -131,29 +131,29 @@ export function ArchitecturalLoader({ messages, fullScreen = true }: Architectur
           className="relative mb-12 h-16 w-16"
         >
           {/* Target box */}
-          <div className="absolute inset-0 border-[0.5px] border-white/20" />
+          <div className="absolute inset-0 border-[0.5px] border-text-tertiary/50" />
           
           {/* Crosshairs */}
           <motion.div 
-            className="absolute top-1/2 -left-4 w-6 h-[0.5px] bg-white/40" 
+            className="absolute top-1/2 -left-4 w-6 h-[0.5px] bg-text-tertiary" 
             initial={{ scaleX: 0, originX: 1 }} 
             animate={{ scaleX: 1 }} 
             transition={{ delay: 0.4, duration: 0.8 }} 
           />
           <motion.div 
-            className="absolute top-1/2 -right-4 w-6 h-[0.5px] bg-white/40" 
+            className="absolute top-1/2 -right-4 w-6 h-[0.5px] bg-text-tertiary" 
             initial={{ scaleX: 0, originX: 0 }} 
             animate={{ scaleX: 1 }} 
             transition={{ delay: 0.4, duration: 0.8 }} 
           />
           <motion.div 
-            className="absolute -top-4 left-1/2 h-6 w-[0.5px] bg-white/40" 
+            className="absolute -top-4 left-1/2 h-6 w-[0.5px] bg-text-tertiary" 
             initial={{ scaleY: 0, originY: 1 }} 
             animate={{ scaleY: 1 }} 
             transition={{ delay: 0.6, duration: 0.8 }} 
           />
           <motion.div 
-            className="absolute -bottom-4 left-1/2 h-6 w-[0.5px] bg-white/40" 
+            className="absolute -bottom-4 left-1/2 h-6 w-[0.5px] bg-text-tertiary" 
             initial={{ scaleY: 0, originY: 0 }} 
             animate={{ scaleY: 1 }} 
             transition={{ delay: 0.6, duration: 0.8 }} 
@@ -161,7 +161,7 @@ export function ArchitecturalLoader({ messages, fullScreen = true }: Architectur
           
           {/* Center Point */}
           <motion.div 
-            className="absolute top-1/2 left-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 bg-white/80" 
+            className="absolute top-1/2 left-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 bg-text-primary" 
             initial={{ scale: 0 }} 
             animate={{ scale: 1 }} 
             transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 20 }} 
@@ -177,7 +177,7 @@ export function ArchitecturalLoader({ messages, fullScreen = true }: Architectur
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
               transition={transitionMacro}
-              className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50"
+              className="font-mono text-[11px] uppercase tracking-[0.2em] text-text-secondary"
             >
               {messages[currentMessageIndex]}
             </motion.p>

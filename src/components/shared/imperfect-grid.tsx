@@ -56,7 +56,7 @@ export function ImperfectGrid() {
   if (!mounted) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.025] mix-blend-plus-lighter">
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.04] text-foreground mix-blend-multiply dark:mix-blend-plus-lighter">
       <svg
         className="absolute h-[200%] w-[200%] -translate-x-1/4 -translate-y-1/4"
         xmlns="http://www.w3.org/2000/svg"

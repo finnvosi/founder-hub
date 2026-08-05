@@ -5,6 +5,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signIn(formData: FormData) {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("mock.supabase")) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+    return;
+  }
+
   const supabase = await createClient();
 
   const data = {
@@ -18,14 +25,19 @@ export async function signIn(formData: FormData) {
     return { error: error.message };
   }
 
-  // Artificial delay to allow the premium loading sequence to play out
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }
 
 export async function signUp(formData: FormData) {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("mock.supabase")) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    revalidatePath("/", "layout");
+    redirect("/onboarding");
+    return;
+  }
+
   const supabase = await createClient();
 
   const data = {
@@ -39,9 +51,7 @@ export async function signUp(formData: FormData) {
     return { error: error.message };
   }
 
-  // Artificial delay to allow the premium loading sequence to play out
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   revalidatePath("/", "layout");
   redirect("/onboarding");
 }
@@ -53,6 +63,13 @@ export async function signOut() {
 }
 
 export async function completeOnboarding(formData: FormData) {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("mock.supabase")) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+    return;
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -76,9 +93,7 @@ export async function completeOnboarding(formData: FormData) {
     return { error: error.message };
   }
 
-  // Artificial delay to allow the premium loading sequence to play out
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }

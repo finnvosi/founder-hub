@@ -18,6 +18,9 @@ const EXECUTIVE_ROLES = [
   { value: "tech-lead", label: "Tech Lead", description: "Technical Team Lead" },
 ] as const;
 
+import { useAppStore } from "@/stores/app-store";
+import type { ExecutiveRole } from "@/types";
+
 export default function OnboardingPage() {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +34,15 @@ export default function OnboardingPage() {
 
     const formData = new FormData(e.currentTarget);
     formData.set("executiveRole", selectedRole);
+
+    const fullName = formData.get("fullName") as string;
+    if (fullName && selectedRole) {
+      useAppStore.getState().setUserProfile({
+        name: fullName,
+        role: selectedRole as ExecutiveRole,
+      });
+    }
+
     const result = await completeOnboarding(formData);
 
     if (result?.error) {
@@ -40,7 +52,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-titanium-black text-text-primary">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background text-text-primary">
       <AnimatePresence>
         {loading && (
           <ArchitecturalLoader
@@ -55,17 +67,17 @@ export default function OnboardingPage() {
           <div className="flex h-8 w-8 items-center justify-center bg-purple-600 text-white font-semibold text-xs rounded-lg shadow-lg shadow-purple-900/20">
             F
           </div>
-          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-white/60">
+          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-text-secondary">
             {APP_NAME}
           </span>
         </div>
 
         {/* Welcome */}
         <div className="mb-10 text-center">
-          <h1 className="text-[28px] font-medium tracking-tight text-white/90 mb-2">
+          <h1 className="text-[28px] font-medium tracking-tight text-text-primary mb-2">
             Welcome
           </h1>
-          <p className="text-[13px] text-white/35">
+          <p className="text-[13px] text-text-tertiary">
             Let&apos;s set up your workspace.
           </p>
         </div>
@@ -73,7 +85,7 @@ export default function OnboardingPage() {
         <form onSubmit={onSubmit} className="flex flex-col gap-8">
           {/* Name */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="fullName" className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+            <label htmlFor="fullName" className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
               Your Name
             </label>
             <Input
@@ -82,13 +94,13 @@ export default function OnboardingPage() {
               type="text"
               placeholder="Alex Chen"
               required
-              className="border-white/[0.06] bg-white/[0.03] h-12 text-[13px] text-white/90 placeholder:text-white/20 focus-visible:ring-purple-500/30 focus-visible:border-white/[0.1]"
+              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus-visible:ring-purple-500/30 focus-visible:border-border-hover"
             />
           </div>
 
           {/* Role Selection */}
           <div className="flex flex-col gap-3">
-            <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+            <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
               What&apos;s your role?
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -100,28 +112,26 @@ export default function OnboardingPage() {
                     key={role.value}
                     type="button"
                     onClick={() => setSelectedRole(role.value)}
-                    whileHover={{ backgroundColor: "rgba(255,255,255,0.04)" }}
-                    transition={transitionMicro}
-                    className={`flex items-center justify-between rounded-xl px-5 py-4 text-left transition-all duration-200 border ${
+                    className={`flex items-center justify-between rounded-xl px-5 py-4 text-left transition-all duration-200 border hover:bg-surface-2 ${
                       isSelected
                         ? "border-purple-500/40 bg-purple-500/[0.06]"
-                        : "border-white/[0.04] hover:border-white/[0.08]"
+                        : "border-border-subtle hover:border-border-hover"
                     }`}
                   >
                     <div className="flex flex-col gap-0.5">
                       <span className={`text-[14px] font-medium transition-colors ${
-                        isSelected ? "text-white" : "text-white/60"
+                        isSelected ? "text-text-primary" : "text-text-secondary"
                       }`}>
                         {role.description}
                       </span>
-                      <span className="font-mono text-[10px] text-white/25 uppercase tracking-wider">
+                      <span className="font-mono text-[10px] text-text-tertiary uppercase tracking-wider">
                         {role.label}
                       </span>
                     </div>
                     <div className={`h-4 w-4 rounded-full border-2 transition-all ${
                       isSelected
                         ? "border-purple-500 bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.3)]"
-                        : "border-white/15"
+                        : "border-border-subtle"
                     }`} />
                   </motion.button>
                 );
@@ -138,7 +148,7 @@ export default function OnboardingPage() {
           <Button
             type="submit"
             disabled={!selectedRole || loading}
-            className="h-12 w-full bg-white text-black hover:bg-white/90 disabled:opacity-50 font-medium text-[13px] transition-all"
+            className="h-12 w-full bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 font-medium text-[13px] transition-all"
           >
             Enter Workspace
           </Button>

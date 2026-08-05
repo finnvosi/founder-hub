@@ -68,7 +68,7 @@ export function CustomCursor() {
     >
       {/* Optional inner dot for extreme precision when not hovering */}
       <motion.div
-        className="h-1 w-1 rounded-full bg-titanium-black"
+        className="h-1 w-1 rounded-full bg-background"
         animate={{
           opacity: isHovering ? 0 : 1,
         }}

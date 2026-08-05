@@ -5,6 +5,7 @@ import { APP_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/app/actions";
+import { useAppStore } from "@/stores/app-store";
 import { ArchitecturalLoader } from "@/components/shared/architectural-loader";
 import { AnimatePresence } from "framer-motion";
 
@@ -19,6 +20,21 @@ export default function LoginPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+
+    if (email) {
+      const emailPrefix = email.split("@")[0] || "User";
+      const name = emailPrefix
+        .split(/[._-]/)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+
+      useAppStore.getState().setUserProfile({
+        name,
+        role: useAppStore.getState().userRole || "ceo",
+      });
+    }
+
     const action = mode === "signin" ? signIn : signUp;
     const result = await action(formData);
 
@@ -29,7 +45,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-titanium-black text-text-primary">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background text-text-primary">
       <AnimatePresence>
         {loading && (
           <ArchitecturalLoader
@@ -48,14 +64,14 @@ export default function LoginPage() {
           <div className="flex h-8 w-8 items-center justify-center bg-purple-600 text-white font-semibold text-xs rounded-lg shadow-lg shadow-purple-900/20">
             F
           </div>
-          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-white/60">
+          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-text-secondary">
             {APP_NAME}
           </span>
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+            <label htmlFor="email" className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
               Email Address
             </label>
             <Input
@@ -64,12 +80,12 @@ export default function LoginPage() {
               type="email"
               placeholder="you@company.com"
               required
-              className="border-white/[0.06] bg-white/[0.03] h-12 text-[13px] text-white/90 placeholder:text-white/20 focus-visible:ring-purple-500/30 focus-visible:border-white/[0.1]"
+              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus-visible:ring-purple-500/30 focus-visible:border-border-hover"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+            <label htmlFor="password" className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
               Password
             </label>
             <Input
@@ -78,7 +94,7 @@ export default function LoginPage() {
               type="password"
               required
               minLength={6}
-              className="border-white/[0.06] bg-white/[0.03] h-12 text-[13px] text-white/90 focus-visible:ring-purple-500/30 focus-visible:border-white/[0.1]"
+              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary focus-visible:ring-purple-500/30 focus-visible:border-border-hover"
             />
           </div>
 
@@ -91,7 +107,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="h-12 w-full bg-white text-black hover:bg-white/90 disabled:opacity-50 font-medium text-[13px] transition-all"
+            className="h-12 w-full bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 font-medium text-[13px] transition-all"
           >
             {mode === "signin" ? "Sign In" : "Create Account"}
           </Button>
@@ -103,14 +119,14 @@ export default function LoginPage() {
               setMode(mode === "signin" ? "signup" : "signin");
               setError(null);
             }}
-            className="font-mono text-[10px] uppercase tracking-wider text-white/25 transition-colors hover:text-white/50"
+            className="font-mono text-[10px] uppercase tracking-wider text-text-tertiary transition-colors hover:text-text-secondary"
           >
             {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
           </button>
         </div>
 
         <div className="mt-8 text-center">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-white/15">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-text-tertiary opacity-50">
             System restricted. Authorized access only.
           </p>
         </div>

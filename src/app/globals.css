@@ -9,29 +9,91 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --radius: 4px;
-  /* Custom Tokens */
-  --color-titanium-black: oklch(0.16 0.01 270);
-  --color-graphite: oklch(0.20 0.01 270);
-  --color-gunmetal: oklch(0.24 0.01 270);
-  --color-charcoal: oklch(0.28 0.01 270);
+
+  /* Semantic Variables (These swap with theme) */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-hover: var(--border-hover);
+  --color-overlay: var(--overlay);
+
+  /* Brand / Accents (These can remain consistent or shift slightly) */
   --color-deep-purple: oklch(0.55 0.22 280);
   --color-deep-purple-muted: oklch(0.55 0.22 280 / 15%);
-  --color-text-primary: oklch(0.95 0 0);
-  --color-text-secondary: oklch(0.65 0 0);
-  --color-text-tertiary: oklch(0.45 0 0);
+  --color-titanium-black: oklch(0.16 0.01 270);
 }
 
+/* Light Mode (Swiss Print Aesthetic) */
 :root {
+  --background: oklch(0.98 0 0); /* Off-white, highly textured bone paper */
+  --foreground: oklch(0.16 0.01 270); /* Titanium black ink */
+  
+  --surface-1: oklch(0.96 0 0);
+  --surface-2: oklch(0.94 0 0);
+  --surface-3: oklch(0.92 0 0);
+  
+  --border: oklch(0.16 0.01 270 / 8%);
+  --input: oklch(0.16 0.01 270 / 6%);
+  --ring: oklch(0.55 0.22 280 / 20%);
+  
+  --text-primary: oklch(0.16 0.01 270);
+  --text-secondary: oklch(0.45 0 0);
+  --text-tertiary: oklch(0.65 0 0);
+
+  --border-subtle: oklch(0.16 0.01 270 / 4%);
+  --border-hover: oklch(0.16 0.01 270 / 10%);
+  --overlay: oklch(0.16 0.01 270 / 4%);
+}
+
+/* Dark Mode (Titanium Architectural Aesthetic) */
+.dark {
   --background: oklch(0.16 0.01 270);
   --foreground: oklch(0.95 0 0);
-  --border: oklch(1 0 0 / 4%);
+  
+  --surface-1: oklch(0.20 0.01 270); /* Graphite */
+  --surface-2: oklch(0.24 0.01 270); /* Gunmetal */
+  --surface-3: oklch(0.28 0.01 270); /* Charcoal */
+  
+  --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 6%);
   --ring: oklch(0.55 0.22 280 / 20%);
-  --radius: 4px;
+
+  --text-primary: oklch(0.95 0 0);
+  --text-secondary: oklch(0.65 0 0);
+  --text-tertiary: oklch(0.45 0 0);
+
+  --border-subtle: oklch(1 0 0 / 4%);
+  --border-hover: oklch(1 0 0 / 10%);
+  --overlay: oklch(1 0 0 / 4%);
+}
+
+/* Fallback: apply dark variables via media query before JS hydration */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: oklch(0.16 0.01 270);
+    --foreground: oklch(0.95 0 0);
+    --surface-1: oklch(0.20 0.01 270);
+    --surface-2: oklch(0.24 0.01 270);
+    --surface-3: oklch(0.28 0.01 270);
+    --border: oklch(1 0 0 / 8%);
+    --input: oklch(1 0 0 / 6%);
+    --ring: oklch(0.55 0.22 280 / 20%);
+    --text-primary: oklch(0.95 0 0);
+    --text-secondary: oklch(0.65 0 0);
+    --text-tertiary: oklch(0.45 0 0);
+    --border-subtle: oklch(1 0 0 / 4%);
+    --border-hover: oklch(1 0 0 / 10%);
+    --overlay: oklch(1 0 0 / 4%);
+  }
 }
 
 @layer base {

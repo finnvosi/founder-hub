@@ -5,6 +5,8 @@ import { TextureOverlay } from "@/components/shared/texture-overlay";
 import { ImperfectGrid } from "@/components/shared/imperfect-grid";
 import { CustomCursor } from "@/components/shared/custom-cursor";
 import { ArchitecturalPreloader } from "@/components/shared/preloader";
+import { ThemeProvider } from "@/components/shared/theme-provider";
+import { ThemeScript } from "@/components/shared/theme-script";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-sans", subsets: ["latin"], display: "swap" });
@@ -17,15 +19,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
-      <body className="min-h-screen bg-titanium-black text-text-primary antialiased">
-        <ArchitecturalPreloader />
-        <CustomCursor />
-        <ImperfectGrid />
-        <TextureOverlay />
-        <TooltipProvider>
-          <div className="relative z-10">{children}</div>
-        </TooltipProvider>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ArchitecturalPreloader />
+          <CustomCursor />
+          <ImperfectGrid />
+          <TextureOverlay />
+          <TooltipProvider>
+            <div className="relative z-10">{children}</div>
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

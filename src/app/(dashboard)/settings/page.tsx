@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { PageHeader } from "@/components/layout/page-header";
 import { motion } from "framer-motion";
 import { transitionMicro } from "@/lib/motion";
 import { useAppStore } from "@/stores/app-store";
+import { ROLE_CONFIGS } from "@/lib/rbac";
+import type { ExecutiveRole } from "@/types";
 import {
   User,
   Palette,
@@ -55,8 +58,8 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-200 ${
                   isActive
-                    ? "bg-white/[0.06] text-white"
-                    : "text-white/35 hover:bg-white/[0.03] hover:text-white/60"
+                    ? "bg-surface-2 text-text-primary"
+                    : "text-text-tertiary hover:bg-surface-2 hover:text-text-secondary"
                 }`}
               >
                 <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-purple-400" : "opacity-50"}`} strokeWidth={1.5} />
@@ -75,13 +78,13 @@ export default function SettingsPage() {
               transition={transitionMicro}
               className="space-y-6"
             >
-              <div className="flex items-center gap-4 rounded-xl border border-white/[0.04] p-5">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.06] text-lg font-medium text-white/70 ring-1 ring-white/[0.08]">
+              <div className="flex items-center gap-4 rounded-xl border border-border-subtle p-5">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-3 text-lg font-medium text-text-primary ring-1 ring-border-subtle">
                   AC
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[15px] font-medium text-white/90">{userName}</span>
-                  <span className="font-mono text-[11px] text-white/35">{userTitle}</span>
+                  <span className="text-[15px] font-medium text-text-primary">{userName}</span>
+                  <span className="font-mono text-[11px] text-text-tertiary">{userTitle}</span>
                 </div>
               </div>
 
@@ -89,6 +92,7 @@ export default function SettingsPage() {
                 <SettingsField label="Full Name" value={userName} />
                 <SettingsField label="Email" value="alex@founderhub.com" />
                 <SettingsField label="Time Zone" value="Pacific Time (PT)" />
+                <SettingsRoleRow />
               </div>
             </motion.div>
           )}
@@ -100,7 +104,7 @@ export default function SettingsPage() {
               transition={transitionMicro}
               className="space-y-4"
             >
-              <SettingsRow label="Theme" description="Interface color scheme" value="Titanium Dark" />
+              <SettingsThemeRow />
               <SettingsRow label="Sidebar" description="Default sidebar state" value="Expanded" />
               <SettingsRow label="Motion" description="Interface animations" value="Enabled" />
             </motion.div>
@@ -145,12 +149,12 @@ export default function SettingsPage() {
                   key={shortcut.description}
                   className="flex items-center justify-between px-4 py-3"
                 >
-                  <span className="text-[13px] text-white/60">{shortcut.description}</span>
+                  <span className="text-[13px] text-text-secondary">{shortcut.description}</span>
                   <div className="flex items-center gap-1">
                     {shortcut.keys.map((key) => (
                       <kbd
                         key={key}
-                        className="flex h-6 min-w-[24px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] px-1.5 font-mono text-[10px] text-white/50"
+                        className="flex h-6 min-w-[24px] items-center justify-center rounded border border-border-hover bg-surface-2 px-1.5 font-mono text-[10px] text-text-tertiary"
                       >
                         {key}
                       </kbd>
@@ -171,10 +175,10 @@ export default function SettingsPage() {
 function SettingsField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+      <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-tertiary">
         {label}
       </label>
-      <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] px-4 py-3 text-[13px] text-white/70">
+      <div className="rounded-lg border border-border-subtle bg-surface-2 px-4 py-3 text-[13px] text-text-primary">
         {value}
       </div>
     </div>
@@ -183,26 +187,107 @@ function SettingsField({ label, value }: { label: string; value: string }) {
 
 function SettingsRow({ label, description, value }: { label: string; description: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-lg px-4 py-4 transition-colors hover:bg-white/[0.02]">
+    <div className="flex items-center justify-between rounded-lg px-4 py-4 transition-colors hover:bg-surface-2">
       <div className="flex flex-col gap-0.5">
-        <span className="text-[13px] text-white/80">{label}</span>
-        <span className="text-[11px] text-white/30">{description}</span>
+        <span className="text-[13px] text-text-primary">{label}</span>
+        <span className="text-[11px] text-text-tertiary">{description}</span>
       </div>
-      <span className="text-[12px] text-white/50">{value}</span>
+      <span className="text-[12px] text-text-secondary">{value}</span>
     </div>
   );
 }
 
 function SettingsToggle({ label, description, enabled }: { label: string; description: string; enabled: boolean }) {
   return (
-    <div className="flex items-center justify-between rounded-lg px-4 py-4 transition-colors hover:bg-white/[0.02]">
+    <div className="flex items-center justify-between rounded-lg px-4 py-4 transition-colors hover:bg-surface-2">
       <div className="flex flex-col gap-0.5">
-        <span className="text-[13px] text-white/80">{label}</span>
-        <span className="text-[11px] text-white/30">{description}</span>
+        <span className="text-[13px] text-text-primary">{label}</span>
+        <span className="text-[11px] text-text-tertiary">{description}</span>
       </div>
-      <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-purple-500/60" : "bg-white/10"}`}>
-        <div className={`h-4 w-4 translate-y-0.5 rounded-full bg-white transition-transform ${enabled ? "translate-x-[18px]" : "translate-x-0.5"}`} />
+      <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-purple-500/60" : "bg-surface-3"}`}>
+        <div className={`h-4 w-4 translate-y-0.5 rounded-full bg-background transition-transform ${enabled ? "translate-x-[18px]" : "translate-x-0.5"}`} />
       </div>
     </div>
   );
 }
+
+function SettingsThemeRow() {
+  const { theme, setTheme } = useTheme();
+  
+  return (
+    <div className="flex items-center justify-between rounded-lg px-4 py-4 transition-colors hover:bg-surface-2">
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[13px] text-text-primary">Theme</span>
+        <span className="text-[11px] text-text-tertiary">Interface color scheme</span>
+      </div>
+      <div className="flex items-center gap-1 rounded-lg border border-border-subtle bg-surface-1 p-0.5">
+        {["light", "dark", "system"].map((t) => (
+          <button
+            key={t}
+            onClick={() => setTheme(t)}
+            className={`rounded-md px-3 py-1 text-[11px] font-medium capitalize transition-colors ${
+              theme === t
+                ? "bg-surface-3 text-text-primary shadow-sm"
+                : "text-text-tertiary hover:text-text-secondary hover:bg-surface-2"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SettingsRoleRow() {
+  const { userRole, setUserRole } = useAppStore();
+  const roles: ExecutiveRole[] = ["ceo", "cfo", "cmo", "cto", "tech-lead"];
+  const currentConfig = ROLE_CONFIGS[userRole];
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-border-subtle bg-surface-1 p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[13px] font-medium text-text-primary">Executive Role & Clearance</span>
+          <span className="text-[11px] text-text-tertiary">
+            Role-Based Access Control (RBAC) security level: <span className="font-mono text-purple-400">Level {currentConfig.clearanceLevel}</span> ({currentConfig.code})
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-5 gap-1.5 pt-1">
+        {roles.map((r) => {
+          const isSelected = userRole === r;
+          const conf = ROLE_CONFIGS[r];
+
+          return (
+            <button
+              key={r}
+              onClick={() => setUserRole(r)}
+              className={`flex flex-col items-center justify-center rounded-lg p-2.5 transition-all text-center border ${
+                isSelected
+                  ? "border-purple-500/40 bg-purple-500/10 text-text-primary shadow-sm"
+                  : "border-border-subtle bg-surface-2 text-text-tertiary hover:border-border-hover hover:text-text-secondary"
+              }`}
+            >
+              <span className="font-mono text-[11px] font-semibold">{conf.label}</span>
+              <span className="font-mono text-[9px] opacity-60">Lvl {conf.clearanceLevel}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-1 rounded bg-surface-2 p-2.5 font-mono text-[10px] text-text-tertiary">
+        <p className="text-text-secondary mb-1">{currentConfig.description}</p>
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {currentConfig.permissions.map((p) => (
+            <span key={p} className="rounded bg-surface-3 px-1.5 py-0.5 text-[9px] text-text-primary">
+              ✓ {p}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+

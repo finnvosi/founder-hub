@@ -9,7 +9,7 @@ import { useAppStore } from "@/stores/app-store";
 import { Plus, Edit2, Trash2, X, Check } from "lucide-react";
 
 export default function TasksPage() {
-  const { tasks, addTask, updateTask, deleteTask, toggleTask } = useAppStore();
+  const { tasks, addTask, updateTask, deleteTask, toggleTask, userName } = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -25,8 +25,8 @@ export default function TasksPage() {
       title: newTaskTitle.trim(),
       status: "todo",
       priority: "medium",
-      assignee: "Unassigned",
-      due: "Pending",
+      assignee: userName || "Team Member",
+      due: "Today",
     });
     setNewTaskTitle("");
     setIsAdding(false);
@@ -42,7 +42,13 @@ export default function TasksPage() {
 
   return (
     <div className="w-full max-w-5xl">
-      <PageHeader title="Task Center" subtitle="Workflow & Execution" />
+      <div className="flex items-center justify-between">
+        <PageHeader title="Task Center" subtitle="Workflow & Execution" />
+        <div className="flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-purple-400">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-purple-400" />
+          <span>Team Sync Active</span>
+        </div>
+      </div>
 
       <div className="mt-8 overflow-hidden rounded-md border border-border bg-card">
         <div className="grid grid-cols-12 gap-4 border-b border-border px-6 py-4">
@@ -96,7 +102,7 @@ export default function TasksPage() {
                 className="group flex cursor-pointer items-center gap-4 px-6 py-4 transition-colors hover:bg-surface-2 border-b border-border"
                 onClick={() => setIsAdding(true)}
               >
-                <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-transparent text-text-tertiary transition-colors group-hover:bg-white/[0.04] group-hover:text-text-secondary">
+                <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-transparent text-text-tertiary transition-colors group-hover:bg-surface-2 group-hover:text-text-secondary">
                   <Plus className="h-3 w-3" />
                 </div>
                 <span className="mono-label group-hover:text-text-secondary">Add new task</span>
@@ -133,7 +139,7 @@ export default function TasksPage() {
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={transitionMicro}
-                        className="h-3 w-3 text-titanium-black"
+                        className="h-3 w-3 text-background"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -185,7 +191,7 @@ export default function TasksPage() {
                   <div className="hidden group-hover:flex items-center justify-end gap-2 text-text-tertiary">
                     <button 
                       onClick={(e) => { e.stopPropagation(); setEditTitle(task.title); setEditingId(task.id); }}
-                      className="p-1 hover:text-white hover:bg-white/10 rounded transition-colors"
+                      className="p-1 hover:text-text-primary hover:bg-surface-3 rounded transition-colors"
                       title="Edit"
                     >
                       <Edit2 className="h-3.5 w-3.5" />

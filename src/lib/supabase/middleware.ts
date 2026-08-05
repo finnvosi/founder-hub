@@ -6,6 +6,11 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  // Bypass if using mock Supabase (e.g. local dev without backend)
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("mock.supabase")) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

@@ -31,7 +31,7 @@ export function ArchitecturalPreloader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-titanium-black"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background text-foreground"
         >
           {/* Construction Lines Container */}
           <div className="absolute inset-0 overflow-hidden opacity-20">
@@ -39,14 +39,14 @@ export function ArchitecturalPreloader() {
               {/* Horizontal sliding lines */}
               <motion.line
                 x1="0" y1="30%" x2="100%" y2="30%"
-                stroke="white" strokeWidth="0.5"
+                stroke="currentColor" strokeWidth="0.5"
                 initial={{ pathLength: 0, x: "-100%" }}
                 animate={{ pathLength: 1, x: "0%" }}
                 transition={{ duration: 1.5, ease }}
               />
               <motion.line
                 x1="0" y1="70%" x2="100%" y2="70%"
-                stroke="white" strokeWidth="0.5"
+                stroke="currentColor" strokeWidth="0.5"
                 initial={{ pathLength: 0, x: "100%" }}
                 animate={{ pathLength: 1, x: "0%" }}
                 transition={{ duration: 1.8, ease, delay: 0.2 }}
@@ -54,14 +54,14 @@ export function ArchitecturalPreloader() {
               {/* Vertical sliding lines */}
               <motion.line
                 x1="40%" y1="0" x2="40%" y2="100%"
-                stroke="white" strokeWidth="0.5"
+                stroke="currentColor" strokeWidth="0.5"
                 initial={{ pathLength: 0, y: "-100%" }}
                 animate={{ pathLength: 1, y: "0%" }}
                 transition={{ duration: 1.6, ease, delay: 0.1 }}
               />
               <motion.line
                 x1="60%" y1="0" x2="60%" y2="100%"
-                stroke="white" strokeWidth="0.5"
+                stroke="currentColor" strokeWidth="0.5"
                 initial={{ pathLength: 0, y: "100%" }}
                 animate={{ pathLength: 1, y: "0%" }}
                 transition={{ duration: 1.4, ease, delay: 0.3 }}
@@ -70,14 +70,14 @@ export function ArchitecturalPreloader() {
               {/* Intersecting Blueprint Node */}
               <motion.circle
                 cx="40%" cy="30%" r="4"
-                fill="none" stroke="white" strokeWidth="1"
+                fill="none" stroke="currentColor" strokeWidth="1"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, ease, delay: 1.2 }}
               />
               <motion.circle
                 cx="60%" cy="70%" r="4"
-                fill="none" stroke="white" strokeWidth="1"
+                fill="none" stroke="currentColor" strokeWidth="1"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, ease, delay: 1.4 }}
@@ -92,7 +92,7 @@ export function ArchitecturalPreloader() {
               initial={{ scaleY: 0, opacity: 0 }}
               animate={{ scaleY: 1, opacity: 1 }}
               transition={{ duration: 0.8, ease, delay: 0.6 }}
-              className="flex h-12 w-12 origin-bottom items-center justify-center bg-deep-purple text-titanium-black"
+              className="flex h-12 w-12 origin-bottom items-center justify-center bg-deep-purple text-background"
             >
               <span className="font-sans text-xl font-medium tracking-tighter">F</span>
             </motion.div>

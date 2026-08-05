@@ -70,22 +70,20 @@ export default function WorkspacePage() {
           return (
             <Link key={workspace.id} href={`/workspace/${workspace.id}`}>
               <motion.div
-                whileHover={{ backgroundColor: "rgba(255,255,255,0.04)" }}
-                transition={transitionMicro}
-                className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-white/[0.04] p-6 transition-colors"
+                className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border-subtle p-6 transition-colors hover:bg-surface-2"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.04]">
-                    <Icon className="h-5 w-5 text-white/50 transition-colors group-hover:text-purple-400" strokeWidth={1.5} />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-2">
+                    <Icon className="h-5 w-5 text-text-secondary transition-colors group-hover:text-purple-400" strokeWidth={1.5} />
                   </div>
-                  <ArrowRight className="h-4 w-4 text-white/0 transition-all group-hover:text-white/30 group-hover:translate-x-0.5" strokeWidth={1.5} />
+                  <ArrowRight className="h-4 w-4 text-transparent transition-all group-hover:text-text-tertiary group-hover:translate-x-0.5" strokeWidth={1.5} />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <h3 className="text-[14px] font-medium text-white/90 group-hover:text-white transition-colors">
+                  <h3 className="text-[14px] font-medium text-text-primary group-hover:text-text-primary transition-colors">
                     {workspace.name}
                   </h3>
-                  <p className="text-[12px] text-white/35 leading-relaxed">
+                  <p className="text-[12px] text-text-tertiary leading-relaxed">
                     {workspace.description}
                   </p>
                 </div>
@@ -94,7 +92,7 @@ export default function WorkspacePage() {
                   {workspace.modules.map((mod) => (
                     <span
                       key={mod}
-                      className="font-mono text-[9px] uppercase tracking-wider text-white/20"
+                      className="font-mono text-[9px] uppercase tracking-wider text-text-tertiary"
                     >
                       {mod}
                     </span>

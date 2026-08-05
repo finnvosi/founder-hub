@@ -48,7 +48,7 @@ export function Sidebar() {
           F
         </div>
         {!sidebarCollapsed && (
-          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-white/80">
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-text-primary">
             {APP_NAME}
           </span>
         )}
@@ -67,8 +67,8 @@ export function Sidebar() {
               className={cn(
                 "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200",
                 isActive
-                  ? "bg-white/[0.06] text-white"
-                  : "text-white/35 hover:bg-white/[0.04] hover:text-white/70"
+                  ? "bg-surface-2 text-text-primary"
+                  : "text-text-tertiary hover:bg-surface-2 hover:text-text-secondary"
               )}
             >
               {isActive && (
@@ -105,8 +105,8 @@ export function Sidebar() {
           className={cn(
             "group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200",
             pathname.startsWith("/settings")
-              ? "bg-white/[0.06] text-white"
-              : "text-white/35 hover:bg-white/[0.04] hover:text-white/70"
+              ? "bg-surface-2 text-text-primary"
+              : "text-text-tertiary hover:bg-surface-2 hover:text-text-secondary"
           )}
         >
           <Settings
@@ -122,17 +122,17 @@ export function Sidebar() {
         </Link>
 
         {/* Separator */}
-        <div className="mx-2 my-2 h-px bg-white/[0.04]" />
+        <div className="mx-2 my-2 h-px bg-border-subtle" />
 
         {/* User */}
-        <div className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-white/[0.04] cursor-pointer">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[11px] font-medium text-white/80 ring-1 ring-white/[0.08]">
+        <div className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-2 cursor-pointer">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-3 text-[11px] font-medium text-text-primary ring-1 ring-border">
             {userInitials}
           </div>
           {!sidebarCollapsed && (
             <div className="flex flex-col overflow-hidden">
-              <span className="truncate text-[13px] font-medium text-white/80">{userName}</span>
-              <span className="truncate font-mono text-[10px] uppercase tracking-wider text-white/30">
+              <span className="truncate text-[13px] font-medium text-text-primary">{userName}</span>
+              <span className="truncate font-mono text-[10px] uppercase tracking-wider text-text-tertiary">
                 {userTitle}
               </span>
             </div>
