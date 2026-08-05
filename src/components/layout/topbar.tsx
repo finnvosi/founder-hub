@@ -1,25 +1,30 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
   Bell,
   LogOut,
-  CheckCircle2,
   CheckCheck,
   Trash2,
-  FileText,
   Calendar,
   MessageCircle,
   CheckSquare,
   AtSign,
+  LayoutDashboard,
+  Layers,
+  FileText,
+  FolderOpen,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { transitionMacro, transitionMicro } from "@/lib/motion";
+import { transitionMacro } from "@/lib/motion";
 import { useAppStore } from "@/stores/app-store";
 import { signOut } from "@/app/actions";
 import { ROLE_CONFIGS } from "@/lib/rbac";
+import { NAVIGATION_ITEMS, APP_NAME } from "@/lib/constants";
 import type { AppNotification } from "@/types";
 
 const notifIconMap = {
@@ -29,7 +34,30 @@ const notifIconMap = {
   chat: MessageCircle,
 };
 
+const navIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  dashboard: LayoutDashboard,
+  workspace: Layers,
+  documents: FileText,
+  files: FolderOpen,
+  tasks: CheckSquare,
+  meetings: Calendar,
+  chat: MessageCircle,
+  settings: SettingsIcon,
+};
+
+// Complete Navigation for Headbar
+const HEADBAR_ITEMS = [
+  ...NAVIGATION_ITEMS,
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: "settings",
+    description: "System preferences",
+  },
+];
+
 export function Topbar() {
+  const pathname = usePathname();
   const router = useRouter();
   const {
     setCommandMenuOpen,
@@ -53,7 +81,7 @@ export function Topbar() {
     return n.type === notifFilter;
   });
 
-  // Click Outside Handler to dismiss popover
+  // Click Outside Handler to dismiss notification popover
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
@@ -78,19 +106,67 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between px-8 bg-background/80 backdrop-blur-md">
-      {/* RBAC Role Clearance Indicator */}
-      <div className="flex items-center gap-2 rounded-full border border-border-subtle bg-surface-1 px-3 py-1 text-[11px]">
-        <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-        <span className="font-mono font-semibold uppercase tracking-wider text-text-primary">
-          {roleConfig?.label}
-        </span>
-        <span className="font-mono text-[9px] uppercase tracking-widest text-text-tertiary">
-          LVL {roleConfig?.clearanceLevel}
-        </span>
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border-subtle bg-surface-1/90 px-6 backdrop-blur-xl">
+      {/* ── Left: Brand Logo & RBAC Clearance ─────────── */}
+      <div className="flex items-center gap-4 shrink-0">
+        <Link href="/dashboard" className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-600 font-mono text-[11px] font-bold text-white shadow-lg shadow-purple-900/20">
+            F
+          </div>
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text-primary">
+            {APP_NAME}
+          </span>
+        </Link>
+
+        <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border-subtle bg-surface-2 px-2.5 py-0.5 text-[10px]">
+          <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+          <span className="font-mono font-semibold uppercase tracking-wider text-text-primary">
+            {roleConfig?.label}
+          </span>
+          <span className="font-mono text-[9px] uppercase tracking-widest text-text-tertiary">
+            LVL {roleConfig?.clearanceLevel}
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center gap-3 relative">
+      {/* ── Center: Head Bar Navigation Menu ───────────── */}
+      <nav className="hidden lg:flex items-center gap-1">
+        {HEADBAR_ITEMS.map((item) => {
+          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const Icon = navIconMap[item.icon] || Layers;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`group relative flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
+                isActive
+                  ? "text-text-primary"
+                  : "text-text-tertiary hover:text-text-secondary hover:bg-surface-2/60"
+              }`}
+            >
+              <Icon
+                className={`h-4 w-4 transition-colors ${
+                  isActive ? "text-purple-400" : "opacity-60 group-hover:opacity-100"
+                }`}
+              />
+              <span>{item.label}</span>
+
+              {/* Active Indicator Underline */}
+              {isActive && (
+                <motion.div
+                  layoutId="headbar-active-indicator"
+                  className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-purple-500"
+                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* ── Right: Search, Notifications & User Actions ── */}
+      <div className="flex items-center gap-3 shrink-0">
         {/* Command Search Trigger */}
         <button
           onClick={() => setCommandMenuOpen(true)}
@@ -102,7 +178,7 @@ export function Topbar() {
           </span>
         </button>
 
-        {/* Notifications Trigger & Popover */}
+        {/* Notifications Popover Trigger */}
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
@@ -128,7 +204,7 @@ export function Topbar() {
                 animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, scale: 0.96, y: -8, filter: "blur(4px)" }}
                 transition={transitionMacro}
-                className="absolute right-0 top-11 w-96 overflow-hidden rounded-2xl border border-border-subtle bg-surface-1 shadow-2xl backdrop-blur-2xl"
+                className="absolute right-0 top-11 w-96 overflow-hidden rounded-2xl border border-border-subtle bg-surface-1 shadow-2xl backdrop-blur-2xl z-50"
               >
                 {/* Header Controls */}
                 <div className="flex items-center justify-between border-b border-border-subtle px-5 py-3.5 bg-surface-2/50">
