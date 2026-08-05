@@ -12,11 +12,13 @@ import {
   Clock,
 } from "lucide-react";
 
+import { useState } from "react";
+
 // ─── Morning Desk Data ─────────────────────────────────────
-const TODAY_TASKS = [
-  { id: 1, title: "Review Q3 board deck draft", priority: "high", due: "Today" },
-  { id: 2, title: "Approve marketing budget proposal", priority: "medium", due: "Today" },
-  { id: 3, title: "Sign partnership agreement", priority: "high", due: "Today" },
+const INITIAL_TODAY_TASKS = [
+  { id: 1, title: "Review Q3 board deck draft", priority: "high", due: "Today", status: "todo" },
+  { id: 2, title: "Approve marketing budget proposal", priority: "medium", due: "Today", status: "todo" },
+  { id: 3, title: "Sign partnership agreement", priority: "high", due: "Today", status: "todo" },
 ];
 
 const UPCOMING_MEETINGS = [
@@ -46,6 +48,16 @@ const priorityColor: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const [tasks, setTasks] = useState(INITIAL_TODAY_TASKS);
+
+  const toggleTask = (id: number) => {
+    setTasks((current) =>
+      current.map((t) =>
+        t.id === id ? { ...t, status: t.status === "done" ? "todo" : "done" } : t
+      )
+    );
+  };
+
   return (
     <div className="w-full max-w-3xl">
       <PageHeader
@@ -62,16 +74,42 @@ export default function DashboardPage() {
           </h2>
         </div>
         <div className="space-y-1">
-          {TODAY_TASKS.map((task) => (
+          {tasks.map((task) => (
             <motion.div
               key={task.id}
               whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
               transition={transitionMicro}
-              className="group flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-colors"
+              onClick={() => toggleTask(task.id)}
+              className={`group flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-colors ${
+                task.status === "done" ? "opacity-50" : ""
+              }`}
             >
               <div className="flex items-center gap-3">
-                <div className="h-4 w-4 rounded border border-white/10 transition-colors group-hover:border-white/20" />
-                <span className="text-[13px] text-white/80 group-hover:text-white transition-colors">
+                <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
+                  task.status === "done"
+                    ? "border-text-primary bg-text-primary"
+                    : "border-white/10 group-hover:border-white/20"
+                }`}>
+                  {task.status === "done" && (
+                    <motion.svg
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={transitionMicro}
+                      className="h-3 w-3 text-titanium-black"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path strokeLinecap="square" strokeLinejoin="miter" d="M5 13l4 4L19 7" />
+                    </motion.svg>
+                  )}
+                </div>
+                <span className={`text-[13px] transition-colors ${
+                  task.status === "done"
+                    ? "text-white/50 line-through"
+                    : "text-white/80 group-hover:text-white"
+                }`}>
                   {task.title}
                 </span>
               </div>
