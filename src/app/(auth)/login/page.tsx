@@ -5,6 +5,8 @@ import { APP_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/app/actions";
+import { ArchitecturalLoader } from "@/components/shared/architectural-loader";
+import { AnimatePresence } from "framer-motion";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -26,6 +28,18 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-titanium-black text-text-primary">
+      <AnimatePresence>
+        {loading && (
+          <ArchitecturalLoader
+            messages={
+              mode === "signin"
+                ? ["AUTHENTICATING IDENTITY", "CONNECTING DATABASE", "VERIFYING CREDENTIALS", "READY"]
+                : ["PROVISIONING ACCOUNT", "PREPARING WORKSPACE", "INITIALIZING", "READY"]
+            }
+          />
+        )}
+      </AnimatePresence>
+
       <div className="relative z-10 w-full max-w-sm px-6">
         {/* Logo */}
         <div className="mb-12 flex items-center justify-center gap-3">
@@ -75,9 +89,9 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="h-12 w-full bg-white text-black hover:bg-white/90 disabled:opacity-50 font-medium text-[13px]"
+            className="h-12 w-full bg-white text-black hover:bg-white/90 disabled:opacity-50 font-medium text-[13px] transition-all"
           >
-            {loading ? "..." : mode === "signin" ? "Sign In" : "Create Account"}
+            {mode === "signin" ? "Sign In" : "Create Account"}
           </Button>
         </form>
 

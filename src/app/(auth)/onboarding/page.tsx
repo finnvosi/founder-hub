@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { completeOnboarding } from "@/app/actions";
 import { transitionMicro } from "@/lib/motion";
+import { ArchitecturalLoader } from "@/components/shared/architectural-loader";
+import { AnimatePresence } from "framer-motion";
 
 const EXECUTIVE_ROLES = [
   { value: "ceo", label: "CEO", description: "Chief Executive Officer" },
@@ -37,6 +39,14 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-titanium-black text-text-primary">
+      <AnimatePresence>
+        {loading && (
+          <ArchitecturalLoader
+            messages={["APPLYING PERMISSIONS", "PREPARING ENVIRONMENT", "SYNCHRONIZING MODULES", "READY"]}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="relative z-10 w-full max-w-md px-6">
         {/* Logo */}
         <div className="mb-6 flex items-center justify-center gap-3">
@@ -126,9 +136,9 @@ export default function OnboardingPage() {
           <Button
             type="submit"
             disabled={!selectedRole || loading}
-            className="h-12 w-full bg-white text-black hover:bg-white/90 disabled:opacity-30 font-medium text-[13px] transition-opacity"
+            className="h-12 w-full bg-white text-black hover:bg-white/90 disabled:opacity-50 font-medium text-[13px] transition-all"
           >
-            {loading ? "Setting up..." : "Enter Workspace"}
+            Enter Workspace
           </Button>
         </form>
       </div>
