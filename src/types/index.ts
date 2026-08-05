@@ -64,3 +64,12 @@ export type Task = {
   assignee: string;
   due: string;
 };
+
+export type ChatMessage = {
+  id: string;
+  channelId: string;
+  user: string;
+  userRole?: string;
+  time: string;
+  content: string;
+};
