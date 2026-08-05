@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -43,6 +43,7 @@ export function Topbar() {
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifFilter, setNotifFilter] = useState<"all" | "task" | "mention" | "meeting">("all");
+  const notifRef = useRef<HTMLDivElement>(null);
 
   const roleConfig = ROLE_CONFIGS[userRole];
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -51,6 +52,22 @@ export function Topbar() {
     if (notifFilter === "all") return true;
     return n.type === notifFilter;
   });
+
+  // Click Outside Handler to dismiss popover
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications]);
 
   const handleNotifClick = (n: AppNotification) => {
     markNotificationAsRead(n.id);
@@ -86,7 +103,7 @@ export function Topbar() {
         </button>
 
         {/* Notifications Trigger & Popover */}
-        <div className="relative">
+        <div ref={notifRef} className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className={`group relative flex h-8 w-8 items-center justify-center rounded-full border bg-transparent text-text-tertiary transition-all ${
