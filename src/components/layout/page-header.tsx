@@ -23,14 +23,20 @@ export function PageHeader({
           }}
         >
           {subtitle && (
-            <motion.p variants={variants.fade} transition={transitionMacro} className="mono-label mb-3">
-              {subtitle}
-            </motion.p>
+            <motion.div variants={variants.fade} transition={transitionMacro} className="flex items-center gap-4 mb-3">
+              <p className="mono-label">
+                {subtitle}
+              </p>
+              <div className="h-px w-8 bg-border" />
+              <span className="font-mono text-[9px] text-text-tertiary tracking-widest uppercase">
+                REV.01 // {new Date().getFullYear()}
+              </span>
+            </motion.div>
           )}
           <motion.h1
             variants={variants.slideUp}
             transition={transitionMacro}
-            className="text-[32px] font-medium tracking-[-0.03em] text-text-primary"
+            className="title-huge mt-1"
           >
             {title}
           </motion.h1>

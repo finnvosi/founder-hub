@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { ExecutiveRole, Task, ChatMessage, MeetingItem, AppNotification } from "@/types";
+import type { ExecutiveRole, Task, ChatMessage, MeetingItem, AppNotification, DocumentItem, FileItem } from "@/types";
 
 interface AppState {
   // UI
@@ -21,6 +21,9 @@ interface AppState {
   messages: ChatMessage[];
   meetings: MeetingItem[];
   notifications: AppNotification[];
+  notifications: AppNotification[];
+  documents: DocumentItem[];
+  files: FileItem[];
 
   // Actions
   toggleSidebar: () => void;
@@ -51,6 +54,15 @@ interface AppState {
   markAllNotificationsAsRead: () => void;
   clearNotifications: () => void;
   addNotification: (notification: Omit<AppNotification, "id" | "time" | "read">) => void;
+
+  // Document Actions
+  addDocument: (doc: Omit<DocumentItem, "id" | "updatedAt">) => void;
+  updateDocument: (id: string, updates: Partial<DocumentItem>) => void;
+  deleteDocument: (id: string) => void;
+
+  // File Actions
+  addFile: (file: Omit<FileItem, "id" | "date">) => void;
+  deleteFile: (id: string) => void;
 }
 
 const titleMap: Record<ExecutiveRole, string> = {
@@ -144,6 +156,19 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
   },
 ];
 
+const INITIAL_DOCS: DocumentItem[] = [
+  { id: "1", title: "Q3 Board Deck Architecture", content: "This is the initial content for Q3 Board Deck Architecture.\n\nThe autosave architecture is built directly into the text area, providing an instantaneous feedback loop for the user.", updatedAt: "2 hours ago" },
+  { id: "2", title: "Product Requirements v2", content: "This is the initial content for Product Requirements v2.\n\nThe autosave architecture is built directly into the text area, providing an instantaneous feedback loop for the user.", updatedAt: "Yesterday" },
+  { id: "3", title: "Engineering Onboarding", content: "This is the initial content for Engineering Onboarding.\n\nThe autosave architecture is built directly into the text area, providing an instantaneous feedback loop for the user.", updatedAt: "3 days ago" },
+];
+
+const INITIAL_FILES: FileItem[] = [
+  { id: "1", name: "Brand_Assets_Final.zip", type: "archive", size: "14.2 MB", date: "Today" },
+  { id: "2", name: "Q3_Financials.xlsx", type: "document", size: "2.1 MB", date: "Yesterday" },
+  { id: "3", name: "Pitch_Deck_v4.pdf", type: "pdf", size: "8.4 MB", date: "3 days ago" },
+  { id: "4", name: "Architecture_Diagram.png", type: "image", size: "4.5 MB", date: "Last week" },
+];
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -165,6 +190,9 @@ export const useAppStore = create<AppState>()(
       messages: INITIAL_MESSAGES,
       meetings: INITIAL_MEETINGS,
       notifications: INITIAL_NOTIFICATIONS,
+      notifications: INITIAL_NOTIFICATIONS,
+      documents: INITIAL_DOCS,
+      files: INITIAL_FILES,
 
       // Actions
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
@@ -278,6 +306,35 @@ export const useAppStore = create<AppState>()(
           ...state.notifications,
         ],
       })),
+
+      // Document Actions
+      addDocument: (doc) => set((state) => {
+        const newDoc: DocumentItem = {
+          ...doc,
+          id: Math.random().toString(36).substring(7),
+          updatedAt: "Just now",
+        };
+        return { documents: [newDoc, ...state.documents] };
+      }),
+      updateDocument: (id, updates) => set((state) => ({
+        documents: state.documents.map(d => d.id === id ? { ...d, ...updates, updatedAt: "Just now" } : d)
+      })),
+      deleteDocument: (id) => set((state) => ({
+        documents: state.documents.filter(d => d.id !== id)
+      })),
+
+      // File Actions
+      addFile: (file) => set((state) => {
+        const newFile: FileItem = {
+          ...file,
+          id: Math.random().toString(36).substring(7),
+          date: "Just now",
+        };
+        return { files: [newFile, ...state.files] };
+      }),
+      deleteFile: (id) => set((state) => ({
+        files: state.files.filter(f => f.id !== id)
+      })),
     }),
     {
       name: "founder-hub-store",
@@ -291,6 +348,8 @@ export const useAppStore = create<AppState>()(
         userName: state.userName,
         userInitials: state.userInitials,
         userTitle: state.userTitle,
+        documents: state.documents,
+        files: state.files,
       }),
     }
   )

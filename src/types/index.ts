@@ -100,3 +100,18 @@ export type AppNotification = {
   read: boolean;
   href?: string;
 };
+
+export type DocumentItem = {
+  id: string;
+  title: string;
+  content: string;
+  updatedAt: string;
+};
+
+export type FileItem = {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  date: string;
+};

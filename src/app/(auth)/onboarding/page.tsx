@@ -64,7 +64,7 @@ export default function OnboardingPage() {
       <div className="relative z-10 w-full max-w-md px-6">
         {/* Logo */}
         <div className="mb-6 flex items-center justify-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center bg-purple-600 text-white font-semibold text-xs rounded-lg shadow-lg shadow-purple-900/20">
+          <div className="flex h-8 w-8 items-center justify-center bg-foreground text-background font-semibold text-xs rounded-lg">
             F
           </div>
           <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-text-secondary">
@@ -94,7 +94,7 @@ export default function OnboardingPage() {
               type="text"
               placeholder="Alex Chen"
               required
-              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus-visible:ring-purple-500/30 focus-visible:border-border-hover"
+              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus-visible:ring-border-hover focus-visible:border-border-hover"
             />
           </div>
 
@@ -114,7 +114,7 @@ export default function OnboardingPage() {
                     onClick={() => setSelectedRole(role.value)}
                     className={`flex items-center justify-between rounded-xl px-5 py-4 text-left transition-all duration-200 border hover:bg-surface-2 ${
                       isSelected
-                        ? "border-purple-500/40 bg-purple-500/[0.06]"
+                        ? "border-purple-500/40 bg-purple-500/10"
                         : "border-border-subtle hover:border-border-hover"
                     }`}
                   >
@@ -130,7 +130,7 @@ export default function OnboardingPage() {
                     </div>
                     <div className={`h-4 w-4 rounded-full border-2 transition-all ${
                       isSelected
-                        ? "border-purple-500 bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.3)]"
+                        ? "border-purple-500 bg-purple-500"
                         : "border-border-subtle"
                     }`} />
                   </motion.button>

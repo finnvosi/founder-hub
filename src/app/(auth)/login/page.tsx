@@ -61,7 +61,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-sm px-6">
         {/* Logo */}
         <div className="mb-12 flex items-center justify-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center bg-purple-600 text-white font-semibold text-xs rounded-lg shadow-lg shadow-purple-900/20">
+          <div className="flex h-8 w-8 items-center justify-center bg-foreground text-background font-semibold text-xs rounded-lg">
             F
           </div>
           <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-text-secondary">
@@ -80,7 +80,7 @@ export default function LoginPage() {
               type="email"
               placeholder="you@company.com"
               required
-              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus-visible:ring-purple-500/30 focus-visible:border-border-hover"
+              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus-visible:ring-border-hover focus-visible:border-border-hover"
             />
           </div>
 
@@ -94,7 +94,7 @@ export default function LoginPage() {
               type="password"
               required
               minLength={6}
-              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary focus-visible:ring-purple-500/30 focus-visible:border-border-hover"
+              className="border-border-subtle bg-surface-2 h-12 text-[13px] text-text-primary focus-visible:ring-border-hover focus-visible:border-border-hover"
             />
           </div>
 

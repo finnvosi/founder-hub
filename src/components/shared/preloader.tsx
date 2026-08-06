@@ -92,7 +92,7 @@ export function ArchitecturalPreloader() {
               initial={{ scaleY: 0, opacity: 0 }}
               animate={{ scaleY: 1, opacity: 1 }}
               transition={{ duration: 0.8, ease, delay: 0.6 }}
-              className="flex h-12 w-12 origin-bottom items-center justify-center bg-deep-purple text-background"
+              className="flex h-12 w-12 origin-bottom items-center justify-center bg-foreground text-background"
             >
               <span className="font-sans text-xl font-medium tracking-tighter">F</span>
             </motion.div>

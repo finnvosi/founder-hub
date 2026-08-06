@@ -44,7 +44,7 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 pt-7 pb-8">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-600 text-[12px] font-semibold text-white shadow-lg shadow-purple-900/20">
+        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-purple text-[10px] font-semibold text-surface-0">
           F
         </div>
         {!sidebarCollapsed && (
@@ -74,7 +74,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.div
                   layoutId="nav-indicator"
-                  className="absolute left-0 top-[8px] bottom-[8px] w-[3px] rounded-r-full bg-purple-500"
+                  className="absolute left-0 top-[6px] bottom-[6px] w-[2px] bg-purple"
                   transition={{ type: "spring", stiffness: 400, damping: 35 }}
                 />
               )}
@@ -82,7 +82,7 @@ export function Sidebar() {
               <Icon
                 className={cn(
                   "h-[18px] w-[18px] shrink-0 transition-all",
-                  isActive ? "text-purple-400" : "opacity-50 group-hover:opacity-80"
+                  isActive ? "text-text-primary" : "opacity-50 group-hover:opacity-80"
                 )}
                 strokeWidth={isActive ? 2 : 1.5}
               />
@@ -112,7 +112,7 @@ export function Sidebar() {
           <Settings
             className={cn(
               "h-[18px] w-[18px] shrink-0 transition-all",
-              pathname.startsWith("/settings") ? "text-purple-400" : "opacity-50 group-hover:opacity-80"
+              pathname.startsWith("/settings") ? "text-text-primary" : "opacity-50 group-hover:opacity-80"
             )}
             strokeWidth={1.5}
           />

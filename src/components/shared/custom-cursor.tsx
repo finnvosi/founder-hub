@@ -6,36 +6,30 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 export function CustomCursor() {
   const [mounted, setMounted] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const [isMagnetic, setIsMagnetic] = useState(false);
 
-  // Use motion values for raw mouse position
+  // Raw mouse position
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Use spring physics for the trailing effect (minimal bounce, smooth glide)
-  const springConfig = { damping: 40, stiffness: 400, mass: 0.5 };
+  // Snappy, highly responsive spring for a "technical/precision" feel
+  const springConfig = { damping: 25, stiffness: 400, mass: 0.1 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
 
     const moveCursor = (e: MouseEvent) => {
-      mouseX.set(e.clientX - 16); // Center the 32px cursor
+      // Center the 32px wrapper
+      mouseX.set(e.clientX - 16); 
       mouseY.set(e.clientY - 16);
     };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      
       // Check if hovering over a clickable element
-      const isClickable = !!target.closest("button, a, input, [role='button']");
+      const isClickable = !!target.closest("button, a, input, textarea, [role='button'], .cursor-pointer, select");
       setIsHovering(isClickable);
-
-      // Check for magnetic specific class
-      const isMagneticEl = !!target.closest(".magnetic-cursor");
-      setIsMagnetic(isMagneticEl);
     };
 
     window.addEventListener("mousemove", moveCursor);
@@ -51,29 +45,53 @@ export function CustomCursor() {
 
   return (
     <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-[100] flex h-8 w-8 items-center justify-center rounded-full mix-blend-difference"
+      className="pointer-events-none fixed top-0 left-0 z-[100] flex h-[32px] w-[32px] items-center justify-center mix-blend-difference"
       style={{
         x: cursorX,
         y: cursorY,
       }}
-      animate={{
-        scale: isMagnetic ? 1.5 : isHovering ? 1.2 : 1,
-        backgroundColor: isHovering ? "rgba(255, 255, 255, 1)" : "rgba(255, 255, 255, 0.4)",
-        backdropFilter: isHovering ? "blur(0px)" : "blur(2px)",
-      }}
-      transition={{
-        scale: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] },
-        backgroundColor: { duration: 0.2 },
-      }}
     >
-      {/* Optional inner dot for extreme precision when not hovering */}
+      {/* Resting State: Precision Crosshair */}
       <motion.div
-        className="h-1 w-1 rounded-full bg-background"
+        className="absolute flex items-center justify-center"
         animate={{
           opacity: isHovering ? 0 : 1,
+          scale: isHovering ? 0.5 : 1,
+          rotate: isHovering ? 45 : 0,
         }}
-        transition={{ duration: 0.2 }}
-      />
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <div className="absolute h-[1px] w-[11px] bg-white opacity-80" />
+        <div className="absolute h-[11px] w-[1px] bg-white opacity-80" />
+      </motion.div>
+
+      {/* Hover State: Technical Framing Brackets */}
+      <motion.div
+        className="absolute"
+        animate={{
+          opacity: isHovering ? 1 : 0,
+          scale: isHovering ? 1 : 0.8,
+        }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <div className="relative h-[22px] w-[22px] opacity-100">
+          {/* Top Left Bracket */}
+          <div className="absolute top-0 left-0 h-[1px] w-[6px] bg-white" />
+          <div className="absolute top-0 left-0 h-[6px] w-[1px] bg-white" />
+          
+          {/* Top Right Bracket */}
+          <div className="absolute top-0 right-0 h-[1px] w-[6px] bg-white" />
+          <div className="absolute top-0 right-0 h-[6px] w-[1px] bg-white" />
+          
+          {/* Bottom Left Bracket */}
+          <div className="absolute bottom-0 left-0 h-[1px] w-[6px] bg-white" />
+          <div className="absolute bottom-0 left-0 h-[6px] w-[1px] bg-white" />
+          
+          {/* Bottom Right Bracket */}
+          <div className="absolute bottom-0 right-0 h-[1px] w-[6px] bg-white" />
+          <div className="absolute bottom-0 right-0 h-[6px] w-[1px] bg-white" />
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

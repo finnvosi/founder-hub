@@ -106,11 +106,11 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border-subtle bg-surface-1/90 px-6 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border bg-surface-1/90 px-6 backdrop-blur-xl">
       {/* ── Left: Brand Logo & RBAC Clearance ─────────── */}
       <div className="flex items-center gap-4 shrink-0">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-600 font-mono text-[11px] font-bold text-white shadow-lg shadow-purple-900/20">
+          <div className="flex h-6 w-6 items-center justify-center rounded bg-foreground font-mono text-[11px] font-bold text-background">
             F
           </div>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text-primary">
@@ -119,7 +119,7 @@ export function Topbar() {
         </Link>
 
         <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border-subtle bg-surface-2 px-2.5 py-0.5 text-[10px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground" />
           <span className="font-mono font-semibold uppercase tracking-wider text-text-primary">
             {roleConfig?.label}
           </span>
@@ -130,7 +130,7 @@ export function Topbar() {
       </div>
 
       {/* ── Center: Head Bar Navigation Menu ───────────── */}
-      <nav className="hidden lg:flex items-center gap-1">
+      <nav className="hidden lg:flex items-center divide-x divide-border-subtle">
         {HEADBAR_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = navIconMap[item.icon] || Layers;
@@ -139,7 +139,7 @@ export function Topbar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`group relative flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
+              className={`group relative flex items-center gap-2 px-4 py-2 text-[13px] font-medium transition-colors ${
                 isActive
                   ? "text-text-primary"
                   : "text-text-tertiary hover:text-text-secondary hover:bg-surface-2/60"
@@ -147,7 +147,7 @@ export function Topbar() {
             >
               <Icon
                 className={`h-4 w-4 transition-colors ${
-                  isActive ? "text-purple-400" : "opacity-60 group-hover:opacity-100"
+                  isActive ? "text-text-primary" : "opacity-60 group-hover:opacity-100"
                 }`}
               />
               <span>{item.label}</span>
@@ -156,7 +156,7 @@ export function Topbar() {
               {isActive && (
                 <motion.div
                   layoutId="headbar-active-indicator"
-                  className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-purple-500"
+                  className="absolute bottom-0 left-2 right-2 h-px bg-purple"
                   transition={{ type: "spring", stiffness: 400, damping: 35 }}
                 />
               )}
@@ -182,7 +182,7 @@ export function Topbar() {
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`group relative flex h-8 w-8 items-center justify-center rounded-full border bg-transparent text-text-tertiary transition-all ${
+            className={`group relative flex h-8 w-8 items-center justify-center rounded-md border bg-transparent text-text-tertiary transition-all ${
               showNotifications || unreadCount > 0
                 ? "border-purple-500/40 bg-purple-500/10 text-purple-400"
                 : "border-border-subtle hover:border-border-hover hover:bg-surface-2 hover:text-text-secondary"
@@ -191,7 +191,7 @@ export function Topbar() {
           >
             <Bell className="h-4 w-4 opacity-80 transition-opacity group-hover:opacity-100" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 font-mono text-[9px] font-bold text-white ring-2 ring-background shadow-md">
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded bg-purple font-mono text-[9px] font-bold text-background ring-1 ring-background">
                 {unreadCount}
               </span>
             )}
@@ -200,20 +200,20 @@ export function Topbar() {
           <AnimatePresence>
             {showNotifications && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: -8, filter: "blur(4px)" }}
-                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.96, y: -8, filter: "blur(4px)" }}
-                transition={transitionMacro}
-                className="absolute right-0 top-11 w-96 overflow-hidden rounded-2xl border border-border-subtle bg-surface-1 shadow-2xl backdrop-blur-2xl z-50"
+                initial={{ opacity: 0, scale: 0.98, y: -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98, y: -4 }}
+                transition={{ duration: 0.12, ease: "linear" }}
+                className="absolute right-0 top-10 w-96 overflow-hidden rounded-lg border border-border bg-surface-1 z-50 shadow-none"
               >
                 {/* Header Controls */}
-                <div className="flex items-center justify-between border-b border-border-subtle px-5 py-3.5 bg-surface-2/50">
+                <div className="flex items-center justify-between border-b border-border-subtle px-5 py-3.5 bg-surface-1">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-text-primary">
                       Notifications
                     </span>
                     {unreadCount > 0 && (
-                      <span className="rounded bg-purple-500/20 px-1.5 py-0.5 font-mono text-[9px] text-purple-300">
+                      <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] text-text-secondary border border-border-subtle">
                         {unreadCount} new
                       </span>
                     )}
@@ -223,7 +223,7 @@ export function Topbar() {
                     {unreadCount > 0 && (
                       <button
                         onClick={() => markAllNotificationsAsRead()}
-                        className="flex items-center gap-1 font-mono text-[10px] text-text-tertiary hover:text-purple-400 transition-colors"
+                        className="flex items-center gap-1 font-mono text-[10px] text-text-tertiary hover:text-text-primary transition-colors"
                         title="Mark all read"
                       >
                         <CheckCheck className="h-3.5 w-3.5" />
@@ -274,13 +274,13 @@ export function Topbar() {
                         <div
                           key={note.id}
                           onClick={() => handleNotifClick(note)}
-                          className={`group flex items-start gap-3.5 p-4 transition-all hover:bg-surface-2 cursor-pointer ${
-                            !note.read ? "bg-purple-500/[0.04]" : ""
+                          className={`group flex items-start gap-3.5 p-4 transition-colors hover:bg-surface-2 cursor-pointer ${
+                            !note.read ? "bg-surface-2/50" : ""
                           }`}
                         >
-                          <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                          <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded border transition-colors ${
                             !note.read
-                              ? "border-purple-500/30 bg-purple-500/10 text-purple-400"
+                              ? "border-border bg-foreground text-background"
                               : "border-border-subtle bg-surface-3 text-text-tertiary"
                           }`}>
                             <Icon className="h-3.5 w-3.5" />
@@ -301,7 +301,7 @@ export function Topbar() {
                           </div>
 
                           {!note.read && (
-                            <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400 shadow-sm" />
+                            <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple" />
                           )}
                         </div>
                       );
@@ -326,6 +326,9 @@ export function Topbar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-3 font-mono text-[11px] text-text-primary ring-1 ring-border-subtle">
           {userInitials}
         </div>
+
+        {/* Barcode Element */}
+        <div className="ml-2 hidden lg:block h-6 w-12 barcode-element opacity-40" title="OS.ID.X" />
       </div>
     </header>
   );

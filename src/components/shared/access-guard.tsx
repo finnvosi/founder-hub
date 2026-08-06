@@ -55,7 +55,7 @@ export function AccessGuard({
 
         <Link
           href="/workspace"
-          className="inline-flex items-center gap-2 text-[12px] font-medium text-purple-400 hover:text-purple-300 transition-colors"
+          className="inline-flex items-center gap-2 text-[12px] font-medium text-text-secondary hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Return to Allowed Workspaces</span>

@@ -62,7 +62,7 @@ export default function SettingsPage() {
                     : "text-text-tertiary hover:bg-surface-2 hover:text-text-secondary"
                 }`}
               >
-                <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-purple-400" : "opacity-50"}`} strokeWidth={1.5} />
+                <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-text-primary" : "opacity-50"}`} strokeWidth={1.5} />
                 <span className="text-[13px] font-medium">{tab.label}</span>
               </button>
             );
@@ -204,7 +204,7 @@ function SettingsToggle({ label, description, enabled }: { label: string; descri
         <span className="text-[13px] text-text-primary">{label}</span>
         <span className="text-[11px] text-text-tertiary">{description}</span>
       </div>
-      <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-purple-500/60" : "bg-surface-3"}`}>
+      <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-purple" : "bg-surface-3"}`}>
         <div className={`h-4 w-4 translate-y-0.5 rounded-full bg-background transition-transform ${enabled ? "translate-x-[18px]" : "translate-x-0.5"}`} />
       </div>
     </div>
@@ -250,7 +250,7 @@ function SettingsRoleRow() {
         <div className="flex flex-col gap-0.5">
           <span className="text-[13px] font-medium text-text-primary">Executive Role & Clearance</span>
           <span className="text-[11px] text-text-tertiary">
-            Role-Based Access Control (RBAC) security level: <span className="font-mono text-purple-400">Level {currentConfig.clearanceLevel}</span> ({currentConfig.code})
+            Role-Based Access Control (RBAC) security level: <span className="font-mono text-text-secondary">Level {currentConfig.clearanceLevel}</span> ({currentConfig.code})
           </span>
         </div>
       </div>
@@ -266,7 +266,7 @@ function SettingsRoleRow() {
               onClick={() => setUserRole(r)}
               className={`flex flex-col items-center justify-center rounded-lg p-2.5 transition-all text-center border ${
                 isSelected
-                  ? "border-purple-500/40 bg-purple-500/10 text-text-primary shadow-sm"
+                  ? "border-purple-500/40 bg-purple-500/10 text-text-primary shadow-none"
                   : "border-border-subtle bg-surface-2 text-text-tertiary hover:border-border-hover hover:text-text-secondary"
               }`}
             >

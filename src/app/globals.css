@@ -13,9 +13,9 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius: 4px;
+  --radius: 6px;
 
-  /* Semantic Variables (These swap with theme) */
+  /* Semantic Variables */
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
@@ -26,9 +26,10 @@
   --color-border-hover: var(--border-hover);
   --color-overlay: var(--overlay);
 
-  /* Brand / Accents (These can remain consistent or shift slightly) */
-  --color-deep-purple: oklch(0.55 0.22 280);
-  --color-deep-purple-muted: oklch(0.55 0.22 280 / 15%);
+  /* Brand / Accents */
+  --color-purple: oklch(0.60 0.18 300);
+  --color-purple-hover: oklch(0.65 0.18 300);
+  --color-purple-muted: oklch(0.60 0.18 300 / 12%);
   --color-titanium-black: oklch(0.16 0.01 270);
 }
 
@@ -43,7 +44,7 @@
   
   --border: oklch(0.16 0.01 270 / 8%);
   --input: oklch(0.16 0.01 270 / 6%);
-  --ring: oklch(0.55 0.22 280 / 20%);
+  --ring: oklch(0.78 0.08 85 / 20%);
   
   --text-primary: oklch(0.16 0.01 270);
   --text-secondary: oklch(0.45 0 0);
@@ -65,7 +66,7 @@
   
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 6%);
-  --ring: oklch(0.55 0.22 280 / 20%);
+  --ring: oklch(0.78 0.08 85 / 20%);
 
   --text-primary: oklch(0.95 0 0);
   --text-secondary: oklch(0.65 0 0);
@@ -76,7 +77,6 @@
   --overlay: oklch(1 0 0 / 4%);
 }
 
-/* Fallback: apply dark variables via media query before JS hydration */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     --background: oklch(0.16 0.01 270);
@@ -86,7 +86,7 @@
     --surface-3: oklch(0.28 0.01 270);
     --border: oklch(1 0 0 / 8%);
     --input: oklch(1 0 0 / 6%);
-    --ring: oklch(0.55 0.22 280 / 20%);
+    --ring: oklch(0.78 0.08 85 / 20%);
     --text-primary: oklch(0.95 0 0);
     --text-secondary: oklch(0.65 0 0);
     --text-tertiary: oklch(0.45 0 0);
@@ -99,10 +99,6 @@
 @layer base {
   * { 
     @apply border-border outline-ring/50;
-    cursor: none;
-  }
-  input, textarea {
-    cursor: text;
   }
   body {
     @apply bg-background text-foreground;
@@ -127,4 +123,54 @@
   letter-spacing: -0.04em;
   line-height: 1.1;
   color: var(--color-text-primary);
+}
+
+@utility bg-fine-grid {
+  background-size: 24px 24px;
+  background-image: linear-gradient(to right, var(--color-border-subtle) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--color-border-subtle) 1px, transparent 1px);
+}
+
+@utility barcode-element {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-text-primary),
+    var(--color-text-primary) 1px,
+    transparent 1px,
+    transparent 2px,
+    var(--color-text-primary) 2px,
+    var(--color-text-primary) 4px,
+    transparent 4px,
+    transparent 6px
+  );
+  opacity: 0.8;
+}
+
+.ui-crosshair {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+}
+.ui-crosshair::before, .ui-crosshair::after {
+  content: "";
+  position: absolute;
+  background-color: var(--color-text-tertiary);
+}
+.ui-crosshair::before {
+  top: 4px;
+  left: 0;
+  width: 9px;
+  height: 1px;
+}
+.ui-crosshair::after {
+  top: 0;
+  left: 4px;
+  width: 1px;
+  height: 9px;
+}
+
+/* Glassmorphism base classes */
+@utility glass-card {
+  position: relative;
+  /* Will inherit border-radius from standard tailwind classes */
 }
