@@ -21,7 +21,6 @@ interface AppState {
   messages: ChatMessage[];
   meetings: MeetingItem[];
   notifications: AppNotification[];
-  notifications: AppNotification[];
   documents: DocumentItem[];
   files: FileItem[];
 
@@ -189,7 +188,6 @@ export const useAppStore = create<AppState>()(
       tasks: INITIAL_TASKS,
       messages: INITIAL_MESSAGES,
       meetings: INITIAL_MEETINGS,
-      notifications: INITIAL_NOTIFICATIONS,
       notifications: INITIAL_NOTIFICATIONS,
       documents: INITIAL_DOCS,
       files: INITIAL_FILES,
