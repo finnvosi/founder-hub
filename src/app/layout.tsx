@@ -13,8 +13,8 @@ const inter = Inter({ variable: "--font-sans", subsets: ["latin"], display: "swa
 const jetbrainsMono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Founder Hub", template: "%s — Founder Hub" },
-  description: "The digital operating system for modern startups.",
+  title: { default: "FOUNDER HUB // SYS", template: "%s // FOUNDER HUB" },
+  description: "Precision architectural software and telemetry for modern startups.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
